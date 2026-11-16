@@ -666,12 +666,11 @@
       <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-xl">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-5">
           <div>
-            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">生活光學儀器・插圖與成像光路對照</span>
-            <h2 class="text-xl font-black text-white mt-0.5">📸 面鏡與透鏡日常生活應用圖鑑（配圖＋光線＋成像）</h2>
-            <p class="text-xs text-slate-400 mt-1">結合生活實境插圖與即時光線追蹤縮圖，一眼看懂光從哪裡射入、如何偏折、以及最後在哪裡成像！</p>
+            <h2 class="text-xl font-black text-white mt-0.5">光學應用圖鑑</h2>
+            <p class="text-xs text-slate-400 mt-1">箭頭表示實際光線的方向。虛像圖的紫色虛線表示光線的反向延伸。視力矯正圖用紫色虛線表示未矯正的光路。</p>
           </div>
           <div class="flex flex-wrap gap-1.5">
-            <button onclick="filterAppsGallery('all')" id="app-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white">全部應用 (8)</button>
+            <button onclick="filterAppsGallery('all')" id="app-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white">全部應用</button>
             <button onclick="filterAppsGallery('lens')" id="app-filter-lens" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">🔍 透鏡折射應用</button>
             <button onclick="filterAppsGallery('mirror')" id="app-filter-mirror" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">🪞 面鏡反射應用</button>
             <button onclick="filterAppsGallery('eye')" id="app-filter-eye" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">👁️ 眼睛與視力矯正</button>
@@ -680,7 +679,7 @@
 
         <!-- Applications Grid -->
         <div id="apps-gallery-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <!-- Populated dynamically with SVG illustrations + Live Ray Canvas + Jump button -->
+          <!-- Application scenes are rendered from OPTICAL_APPS_DATA. -->
         </div>
       </div>
     </section>
@@ -2998,8 +2997,12 @@
       requestAnimationFrame(stepCmp);
     }
 
-    function jumpToLab(element, customP = null, isInf = false) {
+    function jumpToLab(element, customP = null, isInf = false, sceneF = null) {
       switchMainTab('lab');
+      if (sceneF !== null) {
+        state.f = sceneF;
+        document.getElementById('slider-f').value = sceneF;
+      }
       selectElement(element);
       if (isInf) {
         state.isInfinity = true;
@@ -3565,181 +3568,176 @@
     // ILLUSTRATED OPTICAL APPLICATIONS GALLERY (配圖 + 光線 + 成像)
     // =========================================================================
     const OPTICAL_APPS_DATA = [
-      {
-        id: 'magnifier',
-        cat: 'lens',
-        title: '🔍 放大鏡 (觀察紅螞蟻/珠寶)',
-        element: 'convex_lens',
-        pVal: 58,
-        isInf: false,
-        badge: '凸透鏡・焦點內 (p < F)',
-        imgType: '正立放大虛像（與物同側）',
-        rayDesc: '紅螞蟻置於凸透鏡焦點 F 內，光線經凸透鏡折射後雖仍發散，但人眼從右側往透鏡看去，大腦將折射光反向延伸交會於同側，形成放大的正立虛像！',
-        tip: '物體在焦點內愈靠近焦點 F，虛像愈大；愈靠近透鏡，虛像愈小。',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><circle cx="52" cy="42" r="24" fill="rgba(56,189,248,0.2)" stroke="#38bdf8" stroke-width="4"/><line x1="70" y1="58" x2="96" y2="80" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/><circle cx="44" cy="44" r="5" fill="#ef4444"/><circle cx="53" cy="41" r="6.5" fill="#ef4444"/><circle cx="62" cy="39" r="4" fill="#ef4444"/><path d="M48 46 L42 54 M53 47 L53 56 M58 45 L64 53" stroke="#ef4444" stroke-width="2"/><text x="12" y="20" fill="#7dd3fc" font-size="10" font-weight="bold">正立放大虛像</text></svg>`
-      },
-      {
-        id: 'camera',
-        cat: 'lens',
-        title: '📷 照相機 & 人眼水晶體成像',
-        element: 'convex_lens',
-        pVal: 250,
-        isInf: false,
-        badge: '凸透鏡・2倍焦距外 (p > 2F)',
-        imgType: '倒立縮小實像（異側 F~2F 間感光元件上）',
-        rayDesc: '遠處景物在凸透鏡 2F 外，發出的光線經凸透鏡折射後，實際會聚於異側 F~2F 之間的「感光元件（或視網膜）」上，形成清晰的倒立縮小實像。',
-        tip: '拍近物時物距變小，實像往後退，故鏡頭需「向外伸出」拉長像距對焦！',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><rect x="38" y="22" width="64" height="48" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="2"/><ellipse cx="38" cy="46" rx="6" ry="20" fill="rgba(56,189,248,0.45)" stroke="#38bdf8" stroke-width="2"/><line x1="94" y1="28" x2="94" y2="64" stroke="#10b981" stroke-width="3"/><path d="M14 58 L14 30 M10 36 L14 30 L18 36" stroke="#38bdf8" stroke-width="2.5" fill="none"/><path d="M14 30 L38 46 L94 56 M14 30 L38 30 L94 56" stroke="#fbbf24" stroke-width="1.2" opacity="0.8"/><path d="M86 38 L86 56 M83 51 L86 56 L89 51" stroke="#10b981" stroke-width="2" fill="none"/><text x="48" y="16" fill="#6ee7b7" font-size="9" font-weight="bold">感光元件(底片)</text></svg>`
-      },
-      {
-        id: 'projector',
-        cat: 'lens',
-        title: '📽️ 投影機 / 幻燈機 & 顯微鏡物鏡',
-        element: 'convex_lens',
-        pVal: 145,
-        isInf: false,
-        badge: '凸透鏡・F ~ 2F 之間',
-        imgType: '倒立放大實像（異側 2F 外大銀幕上）',
-        rayDesc: '幻燈片或液晶面板置於凸透鏡 F 與 2F 之間，強光穿過後經凸透鏡折射會聚於遠處（2F 外）的白色大銀幕上，形成倒立放大的實像。',
-        tip: '因為成倒立實像，若想在銀幕看到正立影像，底片必須「倒著放」！',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><rect x="14" y="32" width="34" height="28" rx="4" fill="#334155" stroke="#94a3b8" stroke-width="1.5"/><ellipse cx="48" cy="46" rx="5" ry="14" fill="rgba(56,189,248,0.5)" stroke="#38bdf8" stroke-width="2"/><polygon points="48,36 104,16 104,76 48,56" fill="rgba(250,204,21,0.18)"/><line x1="104" y1="14" x2="104" y2="78" stroke="#f8fafc" stroke-width="3"/><text x="58" y="84" fill="#fde047" font-size="9" font-weight="bold">大銀幕(2F外放大實像)</text></svg>`
-      },
-      {
-        id: 'rearview_mirror',
-        cat: 'mirror',
-        title: '🚗 汽車後視鏡 & 山路轉角反射鏡',
-        element: 'convex_mirror',
-        pVal: 180,
-        isInf: false,
-        badge: '凸面鏡・鏡前任意位置',
-        imgType: '正立縮小虛像（鏡後虛焦點 F 內）',
-        rayDesc: '後方來車的光線射至凸面鏡向外發散反射，駕駛眼睛接收反射光後往鏡後延伸，在虛焦點內看到「正立縮小虛像」，能大幅擴大視野範圍、減少死角！',
-        tip: '凸面鏡能涵蓋更廣視角，但鏡中物體看起來比實際距離更遠。',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M72 16 Q56 45 72 74" stroke="#34d399" stroke-width="4" fill="none"/><path d="M16 26 L64 34 L16 14 M16 64 L64 56 L16 76" stroke="#fbbf24" stroke-width="1.5" fill="none"/><line x1="64" y1="34" x2="92" y2="42" stroke="#e879f9" stroke-width="1.5" stroke-dasharray="3,2"/><line x1="64" y1="56" x2="92" y2="48" stroke="#e879f9" stroke-width="1.5" stroke-dasharray="3,2"/><rect x="88" y="38" width="14" height="14" rx="2" fill="rgba(52,211,153,0.35)" stroke="#34d399"/><text x="10" y="48" fill="#6ee7b7" font-size="9" font-weight="bold">廣角視野</text></svg>`
-      },
-      {
-        id: 'headlight_solar',
-        cat: 'mirror',
-        title: '🔦 汽車車前燈/手電筒 & 陽燧太陽能集熱',
-        element: 'concave_mirror',
-        pVal: 100,
-        isInf: false,
-        badge: '凹面鏡・焦點與平行光互逆原理',
-        imgType: '光源在焦點 F ➔ 反射平行光 ｜ 平行陽光 ➔ 會聚於焦點 F',
-        rayDesc: '【車前燈】將燈泡置於凹面鏡焦點 F 上，光線經凹面反射後平行主軸射出遠方；反之【陽燧取火/太陽能】平行陽光射入凹面鏡，反射後會聚於焦點 F 高溫點火！',
-        tip: '這是會考最常考的「光路可逆性」代表應用！',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M78 16 Q102 45 78 74" stroke="#fbbf24" stroke-width="4" fill="none"/><circle cx="52" cy="45" r="6" fill="#fef08a"/><line x1="52" y1="45" x2="84" y2="24" stroke="#fde047" stroke-width="1.8"/><line x1="84" y1="24" x2="10" y2="24" stroke="#fde047" stroke-width="2"/><line x1="52" y1="45" x2="84" y2="66" stroke="#fde047" stroke-width="1.8"/><line x1="84" y1="66" x2="10" y2="66" stroke="#fde047" stroke-width="2"/><text x="12" y="18" fill="#fde047" font-size="9" font-weight="bold">平行強光束射出</text></svg>`
-      },
-      {
-        id: 'makeup_mirror',
-        cat: 'mirror',
-        title: '💄 梳妝放大化妝鏡 & 牙醫口鏡',
-        element: 'concave_mirror',
-        pVal: 58,
-        isInf: false,
-        badge: '凹面鏡・焦點內 (p < F)',
-        imgType: '正立放大虛像（鏡後異側）',
-        rayDesc: '臉部或牙齒位於凹面鏡焦點 F 內，反射光線向外發散，眼睛接收反射光向鏡後延伸，即可看到清晰放大的正立虛像，方便觀察細節。',
-        tip: '注意：若人退後到凹面鏡焦點外，鏡中影像會變成倒立實像喔！',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M58 14 Q76 45 58 76" stroke="#fbbf24" stroke-width="4" fill="none"/><circle cx="36" cy="48" r="10" fill="#38bdf8"/><circle cx="92" cy="45" r="18" fill="rgba(251,191,36,0.25)" stroke="#fbbf24" stroke-dasharray="3,2" stroke-width="2"/><text x="12" y="20" fill="#fde047" font-size="9" font-weight="bold">鏡後正立放大虛像</text></svg>`
-      },
-      {
-        id: 'myopia_glasses',
-        cat: 'eye',
-        title: '👓 近視眼成因與「凹透鏡」矯正',
-        element: 'concave_lens',
-        pVal: 180,
-        isInf: false,
-        badge: '凹透鏡・發散光線延後會聚',
-        imgType: '近視成像在視網膜「前」➔ 配戴凹透鏡發散光線退回視網膜上',
-        rayDesc: '近視眼因眼球過長或水晶體太凸（焦距過短），遠處物體成像在視網膜「前方」導致模糊；配戴「凹透鏡」先將光線微微發散，再經水晶體折射即可準確成像於視網膜！',
-        tip: '口訣：近視太早會聚 ➔ 用「凹透鏡（發散）」往後推！',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M24 22 L32 22 Q28 45 32 68 L24 68 Q28 45 24 22 Z" fill="rgba(192,132,252,0.4)" stroke="#c084fc" stroke-width="1.8"/><circle cx="78" cy="45" r="26" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><ellipse cx="56" cy="45" rx="5" ry="15" fill="rgba(56,189,248,0.5)" stroke="#38bdf8" stroke-width="1.5"/><path d="M6 34 L28 34 L56 30 L104 45 M6 56 L28 56 L56 60 L104 45" stroke="#fde047" stroke-width="1.5" fill="none"/><circle cx="104" cy="45" r="3.5" fill="#10b981"/><text x="58" y="84" fill="#c084fc" font-size="9" font-weight="bold">凹透鏡矯正後落於視網膜</text></svg>`
-      },
-      {
-        id: 'hyperopia_microscope',
-        cat: 'eye',
-        title: '🔬 遠視/老花眼矯正 & 複式顯微鏡雙凸透鏡',
-        element: 'convex_lens',
-        pVal: 65,
-        isInf: false,
-        badge: '凸透鏡・會聚光線 / 二次放大成像',
-        imgType: '遠視配戴凸透鏡會聚 ｜ 顯微鏡：物鏡(倒立放大實像) ➔ 目鏡(放大虛像)',
-        rayDesc: '【遠視眼】成像在視網膜後方，需配戴「凸透鏡」預先會聚光線。【複式顯微鏡】第1次由物鏡（F~2F）成倒立放大實像，第2次落入目鏡焦點內（<F）再放大成最終倒立放大虛像！',
-        tip: '顯微鏡最終看到的影像與原物相比為「上下顛倒、左右相反」的放大虛像！',
-        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><ellipse cx="30" cy="45" rx="5" ry="18" fill="rgba(56,189,248,0.45)" stroke="#38bdf8" stroke-width="2"/><circle cx="78" cy="45" r="25" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><ellipse cx="56" cy="45" rx="5" ry="15" fill="rgba(56,189,248,0.5)" stroke="#38bdf8" stroke-width="1.5"/><path d="M8 32 L30 32 L56 36 L103 45 M8 58 L30 58 L56 54 L103 45" stroke="#34d399" stroke-width="1.5" fill="none"/><circle cx="103" cy="45" r="3.5" fill="#10b981"/><text x="54" y="84" fill="#6ee7b7" font-size="9" font-weight="bold">凸透鏡助會聚於視網膜</text></svg>`
-      }
+      {"id": "flashlight", "cat": "mirror", "title": "手電筒", "element": "concave_mirror", "pVal": 100, "isInf": false, "badge": "凹面反射罩", "rayDesc": "光源放在焦點附近，射向反射罩的光被反射成近似平行的光束，從筒口向前照。", "path": "光源 → 凹面反射罩 → 前方"},
+      {"id": "headlight", "cat": "mirror", "title": "汽車頭燈", "element": "concave_mirror", "pVal": 100, "isInf": false, "badge": "反射式頭燈", "rayDesc": "圖中用凹面反射罩示意集光。實際近燈還要控制光束的方向與分布，照亮路面並減少對向駕駛的眩光。", "path": "燈內光源 → 反射罩 → 車前"},
+      {"id": "corner_mirror", "cat": "mirror", "title": "巷口轉角鏡", "element": "convex_mirror", "pVal": 180, "isInf": false, "badge": "凸面鏡", "rayDesc": "牆角擋住駕駛的直視路線。來車反射的光可以繞經路口凸面鏡，再進入眼睛，讓駕駛先看到另一條路上的車。", "path": "來車 → 轉角鏡 → 駕駛眼睛"},
+      {"id": "rearview_mirror", "cat": "mirror", "title": "汽車車側後視鏡", "element": "convex_mirror", "pVal": 180, "isInf": false, "badge": "凸面鏡", "rayDesc": "後方車輛反射的光到達車側凸面鏡，再反射進駕駛眼睛。把入眼的光線往鏡後延伸，就能標出正立縮小的虛像位置。", "path": "後方車輛 → 車側鏡 → 駕駛眼睛"},
+      {"id": "makeup_mirror", "cat": "mirror", "title": "化妝放大鏡", "element": "concave_mirror", "pVal": 58, "isInf": false, "badge": "凹面鏡", "rayDesc": "臉靠近到凹面鏡的焦距內，反射光進入眼睛，看起來彷彿來自鏡後，因此能看到正立放大的虛像。", "path": "臉部 → 凹面鏡 → 眼睛"},
+      {"id": "plane_mirror_app", "cat": "mirror", "title": "穿衣鏡", "element": "plane_mirror", "pVal": 77, "isInf": false, "badge": "平面鏡", "rayDesc": "身上反射的光經鏡面進入眼睛。沿反射光往後延伸，像與本人距鏡面一樣遠。", "path": "身體 → 平面鏡 → 眼睛"},
+      {"id": "solar", "cat": "mirror", "title": "太陽能反射集熱", "element": "concave_mirror", "pVal": 200, "isInf": true, "badge": "凹面反射罩", "rayDesc": "遠方太陽的入射光可近似為平行光。凹面反射罩把光集中到焦點附近的吸熱位置。", "path": "陽光 → 凹面反射罩 → 集熱位置"},
+      {"id": "magnifier", "cat": "lens", "title": "放大鏡", "element": "convex_lens", "pVal": 58, "isInf": false, "badge": "凸透鏡", "rayDesc": "物體在焦點內時，透鏡後的光仍向外發散。眼睛沿光線反向延伸，看到同側正立放大的虛像。", "path": "物體 → 凸透鏡 → 眼睛"},
+      {"id": "camera", "cat": "lens", "title": "相機", "element": "convex_lens", "pVal": 250, "isInf": false, "badge": "相機鏡頭", "rayDesc": "景物反射的光穿過鏡頭，會聚在感光元件上。圖中以遠景為例，感光元件接收到倒立縮小的實像。", "path": "景物 → 鏡頭 → 感光元件"},
+      {"id": "projector", "cat": "lens", "title": "幻燈機", "element": "convex_lens", "pVal": 145, "isInf": false, "badge": "投影鏡頭", "rayDesc": "光穿過置於 F 和 2F 之間的幻燈片，再經鏡頭會聚到銀幕。幻燈片與投影上下顛倒。", "path": "幻燈片 → 鏡頭 → 銀幕"},
+      {"id": "microscope", "cat": "lens", "title": "複式顯微鏡", "element": "convex_lens", "pVal": 145, "isInf": false, "badge": "物鏡與目鏡", "rayDesc": "物鏡先形成標本的倒立放大實像，目鏡再把這個中間像當作物體，讓眼睛看到放大的虛像。", "path": "標本 → 物鏡 → 中間實像 → 目鏡 → 眼睛"},
+      {"id": "eye_camera", "cat": "eye", "title": "眼睛怎麼成像", "element": "convex_lens", "pVal": 250, "isInf": false, "badge": "眼球屈光系統", "rayDesc": "遠處景物的光經角膜和水晶體折射，正常對焦時會在視網膜上形成實像。圖中把眼球屈光系統簡化為一個透鏡。", "path": "景物 → 角膜與水晶體 → 視網膜"},
+      {"id": "myopia_glasses", "cat": "eye", "title": "近視眼鏡", "element": "concave_lens", "pVal": 180, "isInf": false, "badge": "凹透鏡矯正", "rayDesc": "未矯正時，遠物的光在視網膜前會聚。凹透鏡先使入射光發散一些，再由眼球屈光系統把光聚到視網膜。", "path": "遠方光線 → 凹透鏡 → 眼球屈光系統 → 視網膜"},
+      {"id": "hyperopia", "cat": "eye", "title": "遠視眼鏡", "element": "convex_lens", "pVal": 65, "isInf": false, "badge": "凸透鏡矯正", "rayDesc": "眼睛放鬆、未矯正時，焦點可能落在視網膜後方。凸透鏡預先使光線會聚一些，讓焦點移向視網膜。", "path": "入射光 → 凸透鏡 → 眼球屈光系統 → 視網膜"}
     ];
 
-    function renderAppsGallery(filter = 'all') {
-      ['all', 'lens', 'mirror', 'eye'].forEach(k => {
-        const btn = document.getElementById(`app-filter-${k}`);
-        if (!btn) return;
-        if (k === filter) {
-          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow';
+    // All coordinates describe simplified optical paths, not product dimensions.
+    function applicationScene(app) {
+      const yellow = '#fde68a';
+      const cyan = '#67e8f9';
+      const pink = '#f0abfc';
+      const label = (x, y, value) => `<text x="${x}" y="${y}" text-anchor="middle">${value}</text>`;
+      const ray = (x1, y1, x2, y2, color = yellow, dashed = false) => {
+        const x = x1 + (x2 - x1) * 0.61;
+        const y = y1 + (y2 - y1) * 0.61;
+        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+        return `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${color}" fill="none" stroke-width="1.8" ${dashed ? 'stroke-dasharray="5 4"' : ''}/>${
+          dashed ? '' : `<path d="M-4 -3L4 0L-4 3Z" fill="${color}" transform="translate(${x} ${y}) rotate(${angle})"/>`
+        }`;
+      };
+      const dot = (x, y, color = yellow) => `<circle cx="${x}" cy="${y}" r="4" fill="${color}"/>`;
+      const lens = (x, y, h = 38, concave = false) => concave
+        ? `<path d="M${x-8} ${y-h}H${x+8}Q${x} ${y} ${x+8} ${y+h}H${x-8}Q${x} ${y} ${x-8} ${y-h}Z" fill="#0e7490" stroke="${cyan}"/>`
+        : `<ellipse cx="${x}" cy="${y}" rx="8" ry="${h}" fill="#0e7490" stroke="${cyan}"/>`;
+      const mirror = (x, y, curve) => `<path d="M${x+curve} ${y-35}Q${x-curve} ${y} ${x+curve} ${y+35}" stroke="#a5f3fc" stroke-width="4" fill="none"/>`;
+      const eye = (x, y) => `<path d="M${x-12} ${y}Q${x} ${y-13} ${x+12} ${y}Q${x} ${y+13} ${x-12} ${y}Z" fill="#f8fafc"/>${dot(x,y,'#0e7490')}`;
+      const car = (x, y, color, angle = 0) => `<g transform="translate(${x} ${y}) rotate(${angle})"><rect x="-18" y="-11" width="36" height="22" rx="6" fill="${color}" stroke="#e2e8f0"/><rect x="-6" y="-7" width="12" height="14" rx="2" fill="#0f172a"/><path d="M14 -8v4m0 8v4" stroke="#fef3c7" stroke-width="2"/></g>`;
+      const target = (x, y, tip, color) => `<path d="M${x} ${y}V${tip}m-4 ${tip < y ? 5 : -5}l4 ${tip < y ? -5 : 5} 4 ${tip < y ? 5 : -5}" stroke="${color}" stroke-width="2.5" fill="none"/>`;
+      let picture = '';
+
+      if (['flashlight', 'headlight', 'solar'].includes(app.id)) {
+        const solar = app.id === 'solar';
+        const headlight = app.id === 'headlight';
+        const fx = 115, fy = 75;
+        const reflector = `<path d="M71.48 39Q58.52 75 71.48 111" stroke="#a5f3fc" stroke-width="4" fill="none"/>`;
+        const housing = solar ? '' : headlight
+          ? `<path d="M28 81H127L142 93V111H28Z" fill="#334155" stroke="#94a3b8"/><path d="M26 81L41 54H55" stroke="#94a3b8" fill="none"/><circle cx="45" cy="113" r="11" fill="#0f172a" stroke="#94a3b8"/>`
+          : `<path d="M23 64H58L84 35H133V115H84L58 86H23Z" fill="#334155" stroke="#94a3b8"/>`;
+        const traces = [43, 58, 92, 107].map(y => {
+          const hitX = 65 + (y - fy) ** 2 / (4 * 50);
+          return solar ? ray(337,y,hitX,y) + ray(hitX,y,fx,fy)
+            : ray(fx,fy,hitX,y) + ray(hitX,y,337,y);
+        }).join('');
+        picture = housing + reflector + traces + dot(fx,fy)
+          + label(72,24,'凹面反射罩')
+          + label(123,135,solar ? '集熱位置 F' : '光源在焦點 F')
+          + label(254,27,solar ? '平行陽光向左射入' : '反射光束向前照明');
+      } else if (app.id === 'corner_mirror') {
+        picture = `<path d="M0 88H255V0H345V174H0Z" fill="#293747"/><path d="M0 131H299V0" stroke="#94a3b8" stroke-dasharray="12 8" fill="none"/><path d="M0 0H244V86H0Z" fill="#415059"/>`
+          + label(111,46,'轉角遮蔽物') + car(307,37,'#f97316',90) + car(82,137,'#2563eb')
+          + `<path d="M309 172Q330 170 345 141" stroke="#a5f3fc" stroke-width="4" fill="none"/>`
+          + ray(307,53,326,164) + ray(326,164,94,135,cyan) + eye(94,135)
+          + label(305,17,'來車') + label(82,163,'駕駛眼睛') + label(299,149,'凸面鏡');
+      } else if (['rearview_mirror', 'makeup_mirror', 'plane_mirror_app'].includes(app.id)) {
+        const rear = app.id === 'rearview_mirror';
+        const flat = app.id === 'plane_mirror_app';
+        const obj = rear ? [53, 49] : [123, 49];
+        const virtual = [rear ? 241 : flat ? 277 : 292, rear ? 65 : flat ? 49 : 25];
+        const hits = [71, 80].map(y => {
+          const x = 200 + (flat ? 0 : (rear ? 1 : -1) * 12 * ((y-75)/35) ** 2);
+          const eyeX = rear ? 142 : 116;
+          const eyeY = y + (virtual[1] - y) * (eyeX-x) / (virtual[0]-x);
+          return { x,y,eyeX,eyeY };
+        });
+        const yMean = (hits[0].eyeY+hits[1].eyeY)/2;
+        picture = (rear
+          ? car(36,49,'#f97316') + car(118,yMean,'#2563eb') + label(40,24,'後方車輛')
+          : label(111,26,flat ? '真人' : '臉部') + target(123,64,49,'#fb923c'))
+          + (flat ? `<path d="M200 40V110" stroke="#a5f3fc" stroke-width="4"/>` : mirror(200,75,rear ? 12 : -12))
+          + hits.map(({x,y,eyeX,eyeY}) => ray(...obj,x,y) + ray(x,y,eyeX,eyeY,cyan) + ray(x,y,...virtual,pink,true)).join('')
+          + eye(hits[0].eyeX,yMean)
+          + (rear
+            ? `<g opacity="0.65" transform="translate(${virtual[0]-9} ${virtual[1]}) scale(.54)">${car(0,0,'#7e22ce')}</g>`
+            : '')
+          + dot(...virtual,pink)
+          + label(96,148,rear ? '駕駛眼睛' : '觀察者眼睛')
+          + label(198,126,flat ? '平面鏡' : rear ? '車側凸面鏡' : '凹面化妝鏡') + label(291,111,'鏡後虛像');
+      } else if (app.id === 'magnifier') {
+        picture = lens(184,78) + target(135,79,63,'#fb923c') + target(61,79,37,pink)
+          + ray(135,63,184,56) + ray(135,63,184,62)
+          + ray(184,56,287,71.9,cyan) + ray(184,62,287,82.9,cyan)
+          + ray(184,56,61,37,pink,true) + ray(184,62,61,37,pink,true) + eye(293,78)
+          + label(61,112,'放大虛像') + label(133,112,'物體') + label(184,133,'凸透鏡') + label(291,112,'眼睛');
+      } else if (['camera','projector','microscope'].includes(app.id)) {
+        const projection = app.id === 'projector';
+        const microscope = app.id === 'microscope';
+        const xObject = projection || microscope ? 91 : 35;
+        const xLens = projection || microscope ? 128 : 189;
+        const xImage = microscope ? 202 : 317;
+        const imageTip = projection ? 128 : microscope ? 110 : 93;
+        const objectTip = projection ? 64 : microscope ? 60 : 55;
+        picture = (projection
+          ? `<rect x="30" y="35" width="125" height="88" rx="10" fill="#263548" stroke="#64748b"/>`
+          : microscope ? '' : `<rect x="176" y="31" width="155" height="103" rx="10" fill="#263548" stroke="#64748b"/>`)
+          + lens(xLens,80) + target(xObject,80,objectTip,'#fb923c')
+          + target(xImage,80,imageTip,cyan)
+          + [55,81,104].map(y => ray(xObject,objectTip,xLens,y) + ray(xLens,y,xImage,imageTip,cyan)).join('')
+          + label(xObject,149,projection ? '幻燈片' : microscope ? '標本' : '景物')
+          + label(xLens,22,microscope ? '物鏡' : '鏡頭')
+          + (microscope
+            ? lens(256,80) + eye(344,53)
+              + ray(xImage,imageTip,256,87,cyan) + ray(256,87,340,45.8,cyan)
+              + ray(xImage,imageTip,256,95,cyan) + ray(256,95,340,60,cyan)
+              + ray(256,87,148,140,pink,true) + ray(256,95,148,140,pink,true)
+              + label(196,149,'中間實像') + label(256,22,'目鏡') + label(336,117,'眼睛')
+            : `<path d="M317 32V136" stroke="#94a3b8" stroke-width="3"/>` + label(309,155,projection ? '銀幕' : '感光元件'));
+      } else {
+        const myopia = app.id === 'myopia_glasses';
+        const uncorrected = app.id === 'eye_camera';
+        const xRetina = 296;
+        const xUncorrected = uncorrected ? xRetina : myopia ? 260 : 329;
+        picture = `<ellipse cx="252" cy="80" rx="50" ry="49" fill="#263548" stroke="#94a3b8"/><path d="M287 46Q305 80 287 114" fill="none" stroke="#fb923c" stroke-width="3"/>`
+          + lens(220,80,23) + label(282,23,'視網膜') + label(216,148,'眼球屈光系統');
+        if (uncorrected) {
+          picture += [55,105].map(y => ray(24,y,220,y===55 ? 66 : 94) + ray(220,y===55 ? 66 : 94,xRetina,80,cyan)).join('');
         } else {
-          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700';
+          picture += lens(114,80,37,myopia) + label(114,22,myopia ? '凹透鏡眼鏡' : '凸透鏡眼鏡')
+            + [1,-1].map(sign => {
+              const start = 80 + sign*13;
+              const hit = 80 + sign*(myopia ? 21 : 8);
+              return ray(24,start,114,start) + ray(114,start,220,hit) + ray(220,hit,xRetina,80,cyan)
+                + ray(220,start,xUncorrected,80,pink,true);
+            }).join('')
+            + label(276,167,myopia ? '虛線：未矯正時在視網膜前會聚' : '虛線：未矯正時在視網膜後會聚');
         }
-      });
+      }
+
+      return `<svg viewBox="0 0 370 174" role="img" aria-label="${app.title}的光路示意圖" class="w-full h-auto block" style="font: 600 13px system-ui,sans-serif;fill:#e2e8f0"><rect width="370" height="174" fill="#111d30"/>${picture}</svg>`;
+    }
+
+    function renderAppsGallery(filter = 'all') {
+      for (const category of ['all', 'lens', 'mirror', 'eye']) {
+        const button = document.getElementById(`app-filter-${category}`);
+        const selected = category === filter;
+        button.className = selected
+          ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white'
+          : 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700';
+        button.setAttribute('aria-pressed', String(selected));
+      }
 
       const grid = document.getElementById('apps-gallery-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      OPTICAL_APPS_DATA.filter(a => filter === 'all' || a.cat === filter).forEach((app, idx) => {
-        const card = document.createElement('div');
-        card.className = 'bg-slate-950/90 rounded-2xl border border-slate-800 hover:border-sky-500/50 transition overflow-hidden flex flex-col justify-between shadow-lg';
-        const cid = `app-ray-canvas-${app.id}-${idx}`;
-
-        card.innerHTML = `
-          <div>
-            <!-- Top Header -->
-            <div class="px-4 py-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between gap-2">
-              <h3 class="font-black text-base text-white">${app.title}</h3>
-              <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 shrink-0">${app.badge}</span>
+      grid.innerHTML = OPTICAL_APPS_DATA
+        .filter(app => filter === 'all' || app.cat === filter)
+        .map(app => `
+          <article class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex flex-col">
+            <header class="px-4 py-3 flex flex-wrap items-baseline justify-between gap-1">
+              <h3 class="font-bold text-base text-white">${app.title}</h3>
+              <span class="text-xs text-sky-300">${app.badge}</span>
+            </header>
+            <figure>
+              ${applicationScene(app)}
+              <figcaption class="px-4 py-2 text-xs font-bold text-amber-200">${app.path}</figcaption>
+            </figure>
+            <p class="px-4 pb-4 text-sm leading-relaxed text-slate-300 flex-1">${app.rayDesc}</p>
+            <div class="px-4 py-2 border-t border-slate-800">
+              <button onclick="jumpToLab('${app.element}', ${app.pVal}, ${app.isInf}, 100)" class="px-3 py-1.5 rounded-lg bg-sky-700 hover:bg-sky-600 text-white font-bold text-xs">
+                ${['microscope', 'myopia_glasses', 'hyperopia', 'eye_camera'].includes(app.id) ? '到實驗室看單片透鏡' : '到實驗室操作'}
+              </button>
             </div>
-
-            <!-- Dual Visual Box: Left SVG Illustration + Right Live Ray-Tracing Diagram -->
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-950">
-              <div class="sm:col-span-5 h-32 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 flex flex-col">
-                <div class="text-[10px] font-bold text-slate-400 px-2 py-1 bg-slate-950/80 border-b border-slate-800">🎨 儀器結構示意圖</div>
-                <div class="flex-1 flex items-center justify-center">${app.svg}</div>
-              </div>
-              <div class="sm:col-span-7 h-32 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 flex flex-col">
-                <div class="text-[10px] font-bold text-amber-300 px-2 py-1 bg-slate-950/80 border-b border-slate-800 flex justify-between">
-                  <span>✨ 對應光線與成像導引圖</span>
-                  <span class="text-sky-300">物 ➔ 鏡 ➔ 像</span>
-                </div>
-                <div class="flex-1 relative">
-                  <canvas id="${cid}" width="260" height="98" class="w-full h-full block"></canvas>
-                </div>
-              </div>
-            </div>
-
-            <!-- Explanation Text -->
-            <div class="px-4 py-3 space-y-1.5 text-xs">
-              <div class="font-bold text-emerald-300">🎯 成像性質：${app.imgType}</div>
-              <p class="text-slate-300 leading-relaxed">${app.rayDesc}</p>
-              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-amber-300">
-                📌 <strong>會考重點：</strong>${app.tip}
-              </div>
-            </div>
-          </div>
-
-          <div class="px-4 py-2.5 bg-slate-900/80 border-t border-slate-800 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400">點擊右側按鈕在主實驗室互動拖曳 ➔</span>
-            <button onclick="jumpToLab('${app.element}', ${app.pVal}, ${app.isInf})" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow transition">
-              🔬 載入此應用至實驗室模擬
-            </button>
-          </div>
-        `;
-        grid.appendChild(card);
-
-        requestAnimationFrame(() => {
-          const c = document.getElementById(cid);
-          if (c) drawTableGuideThumb(c, app.element, app.pVal, 100, app.isInf);
-        });
-      });
+          </article>`).join('');
     }
 
     function filterAppsGallery(filter) {
@@ -3753,29 +3751,23 @@
       const descEl = document.getElementById('hud-app-card-desc');
       if (!svgBox || !titleEl || !descEl) return;
 
-      let matchedApp = OPTICAL_APPS_DATA[0];
+      let appId = 'plane_mirror_app';
       if (opt.element === 'convex_lens') {
-        if (opt.is - 0 || opt.p < opt.f) matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'magnifier');
-        else if (opt.p >= 1.95 * opt.f) matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'camera');
-        else matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'projector');
+        appId = opt.isInfinity || opt.p >= 2 * opt.f ? 'camera' : opt.p < opt.f ? 'magnifier' : 'projector';
       } else if (opt.element === 'concave_lens') {
-        matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'myopia_glasses');
+        appId = 'myopia_glasses';
       } else if (opt.element === 'concave_mirror') {
-        if (opt.p < opt.f && !opt.isInfinity) matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'makeup_mirror');
-        else matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'headlight_solar');
+        appId = opt.isInfinity ? 'solar' : opt.p < opt.f ? 'makeup_mirror' : 'flashlight';
       } else if (opt.element === 'convex_mirror') {
-        matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'rearview_mirror');
-      } else {
-        matchedApp = {
-          title: '🪞 平面穿衣鏡 / 潛望鏡',
-          imgType: '正立相等虛像（像距＝物距、左右相反）',
-          svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><line x1="60" y1="10" x2="60" y2="80" stroke="#e2e8f0" stroke-width="3"/><circle cx="32" cy="45" r="12" fill="#38bdf8"/><circle cx="88" cy="45" r="12" fill="rgba(56,189,248,0.35)" stroke="#38bdf8" stroke-dasharray="3,2" stroke-width="2"/></svg>`
-        };
+        appId = 'rearview_mirror';
       }
 
-      svgBox.innerHTML = matchedApp.svg;
-      titleEl.textContent = matchedApp.title;
-      descEl.textContent = matchedApp.imgType;
+      const app = OPTICAL_APPS_DATA.find(candidate => candidate.id === appId);
+      if (svgBox.dataset.application === appId) return;
+      svgBox.dataset.application = appId;
+      svgBox.innerHTML = applicationScene(app);
+      titleEl.textContent = app.title;
+      descEl.textContent = app.path;
     }
 
     // =========================================================================

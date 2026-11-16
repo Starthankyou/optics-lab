@@ -1,0 +1,3965 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>面鏡與透鏡成像互動實驗室 | 國中理化光學全攻略</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b1120;
+      --panel-dark: #151f32;
+    }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #0b1120;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    /* Range Slider Styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+      border: 1px solid #475569;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+      margin-top: -7px;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #7dd3fc;
+    }
+    .canvas-container {
+      background: radial-gradient(circle at 50% 50%, #131c31 0%, #090d16 100%);
+    }
+    .glow-badge {
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    }
+    .tab-active {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+    .element-btn-active {
+      border-color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.15) !important;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
+
+  <!-- Top Header & Navigation -->
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-r from-sky-300 via-cyan-200 to-indigo-300 bg-clip-text text-transparent">
+            面鏡與透鏡成像互動實驗室 <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 align-middle ml-1">光線・紙屏・眼睛方位全攻略</span>
+          </h1>
+          <p class="text-xs text-slate-400">國中理化第四章：光線從哪射？屏幕放哪裡？眼睛站哪邊？可拖曳紙屏對焦與視線光束追蹤</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <nav class="flex flex-wrap items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
+        <button onclick="switchMainTab('lab')" id="tab-btn-lab" class="tab-active px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5">
+          <span>🔬</span> 單鏡光學實驗室
+        </button>
+        <button onclick="switchMainTab('compare')" id="tab-btn-compare" class="text-slate-300 hover:text-white hover:bg-slate-800/60 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5">
+          <span>⚖️</span> 多鏡同步比較模式
+        </button>
+        <button onclick="switchMainTab('apps')" id="tab-btn-apps" class="text-slate-300 hover:text-white hover:bg-slate-800/60 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5">
+          <span>📸</span> 光學應用圖鑑 (配圖+光路)
+        </button>
+        <button onclick="switchMainTab('table')" id="tab-btn-table" class="text-slate-300 hover:text-white hover:bg-slate-800/60 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5">
+          <span>📊</span> 圖文對照總表 &amp; 交叉比較
+        </button>
+        <button onclick="switchMainTab('quiz')" id="tab-btn-quiz" class="text-slate-300 hover:text-white hover:bg-slate-800/60 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5">
+          <span>🏆</span> 會考迷思挑戰
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Workspace Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4">
+
+    <!-- ==========================================
+         TAB 1: 單鏡光學實驗室 (Interactive Ray-Tracing Lab)
+         ========================================== -->
+    <section id="section-lab" class="space-y-4">
+      
+      <!-- 5 Optical Elements Selector Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+        <button onclick="selectElement('convex_lens')" id="el-btn-convex_lens" class="element-btn-active group flex flex-col items-center p-3 rounded-xl bg-slate-900/90 border-2 border-slate-800 hover:border-sky-500/60 transition-all text-left">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">會聚透鏡 (折射)</span>
+            <span class="text-lg">🔍</span>
+          </div>
+          <div class="text-base font-black text-white w-full">凸透鏡</div>
+          <div class="text-[11px] text-slate-400 w-full truncate">中間厚邊緣薄・實像/放大虛像</div>
+        </button>
+
+        <button onclick="selectElement('concave_lens')" id="el-btn-concave_lens" class="group flex flex-col items-center p-3 rounded-xl bg-slate-900/90 border-2 border-slate-800 hover:border-sky-500/60 transition-all text-left">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">發散透鏡 (折射)</span>
+            <span class="text-lg">👓</span>
+          </div>
+          <div class="text-base font-black text-white w-full">凹透鏡</div>
+          <div class="text-[11px] text-slate-400 w-full truncate">中間薄邊緣厚・恆正立縮小虛像</div>
+        </button>
+
+        <button onclick="selectElement('concave_mirror')" id="el-btn-concave_mirror" class="group flex flex-col items-center p-3 rounded-xl bg-slate-900/90 border-2 border-slate-800 hover:border-sky-500/60 transition-all text-left">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">會聚面鏡 (反射)</span>
+            <span class="text-lg">🔦</span>
+          </div>
+          <div class="text-base font-black text-white w-full">凹面鏡</div>
+          <div class="text-[11px] text-slate-400 w-full truncate">性質同凸透鏡・車燈/化妝鏡</div>
+        </button>
+
+        <button onclick="selectElement('convex_mirror')" id="el-btn-convex_mirror" class="group flex flex-col items-center p-3 rounded-xl bg-slate-900/90 border-2 border-slate-800 hover:border-sky-500/60 transition-all text-left">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">發散面鏡 (反射)</span>
+            <span class="text-lg">🚗</span>
+          </div>
+          <div class="text-base font-black text-white w-full">凸面鏡</div>
+          <div class="text-[11px] text-slate-400 w-full truncate">性質同凹透鏡・後視鏡/轉角鏡</div>
+        </button>
+
+        <button onclick="selectElement('plane_mirror')" id="el-btn-plane_mirror" class="col-span-2 sm:col-span-1 group flex flex-col items-center p-3 rounded-xl bg-slate-900/90 border-2 border-slate-800 hover:border-sky-500/60 transition-all text-left">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300">對照基準 (反射)</span>
+            <span class="text-lg">🪞</span>
+          </div>
+          <div class="text-base font-black text-white w-full">平面鏡</div>
+          <div class="text-[11px] text-slate-400 w-full truncate">物距=像距・正立相等虛像</div>
+        </button>
+      </div>
+
+      <!-- Main Interactive Canvas + Side HUD Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        <!-- Left/Center: Interactive Ray-Tracing Canvas (8 cols) -->
+        <div class="lg:col-span-8 flex flex-col bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+          
+          <!-- Top Canvas Toolbar -->
+          <div class="px-4 py-2.5 bg-slate-950/80 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-xs font-bold text-slate-400">快速定位物體：</span>
+              <button onclick="setQuickPosition('infinity')" class="px-2 py-1 rounded-md text-xs font-bold bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white transition">☀️ 無窮遠(平行光)</button>
+              <button onclick="setQuickPosition('beyond2F')" class="px-2 py-1 rounded-md text-xs font-bold bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white transition">&gt; 2F (2倍焦距外)</button>
+              <button onclick="setQuickPosition('at2F')" class="px-2 py-1 rounded-md text-xs font-bold bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white transition">= 2F (2倍焦距上)</button>
+              <button onclick="setQuickPosition('betweenF2F')" class="px-2 py-1 rounded-md text-xs font-bold bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white transition">F ~ 2F 之間</button>
+              <button onclick="setQuickPosition('atF')" class="px-2 py-1 rounded-md text-xs font-bold bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white transition">= F (焦點上)</button>
+              <button onclick="setQuickPosition('insideF')" class="px-2 py-1 rounded-md text-xs font-bold bg-amber-500/20 border border-amber-500/40 hover:bg-amber-500 text-amber-300 hover:text-slate-950 transition">&lt; F (焦點內)</button>
+            </div>
+
+            <!-- Object Avatar Switcher -->
+            <div class="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
+              <span class="text-[11px] text-slate-400">物體造型:</span>
+              <button onclick="setAvatar('cat')" id="avatar-cat" class="px-2 py-0.5 rounded text-xs font-bold bg-sky-600 text-white">🐱 機器貓</button>
+              <button onclick="setAvatar('candle')" id="avatar-candle" class="px-2 py-0.5 rounded text-xs font-bold text-slate-400 hover:text-white">🕯️ 燭火</button>
+              <button onclick="setAvatar('arrow')" id="avatar-arrow" class="px-2 py-0.5 rounded text-xs font-bold text-slate-400 hover:text-white">⬆️ 箭頭P</button>
+            </div>
+          </div>
+
+          <!-- Second Action Bar: Snap Paper Screen & Snap Observer Eye -->
+          <div class="px-4 py-2 bg-slate-900/95 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-amber-300 flex items-center gap-1">🎯 實驗室互動道具：</span>
+              <button onclick="snapScreenToImage()" class="px-2.5 py-1 rounded-lg font-bold bg-emerald-600/25 border border-emerald-500/50 hover:bg-emerald-500 text-emerald-300 hover:text-slate-950 transition flex items-center gap-1">
+                📄 一鍵將「紙屏」移至成像位置對焦
+              </button>
+              <button onclick="snapScreenToVirtual()" class="px-2.5 py-1 rounded-lg font-bold bg-purple-600/20 border border-purple-500/40 hover:bg-purple-500 text-purple-300 hover:text-white transition flex items-center gap-1">
+                🧪 測試把「紙屏」放到虛像位置
+              </button>
+              <button onclick="resetEyePosition()" class="px-2.5 py-1 rounded-lg font-bold bg-sky-600/25 border border-sky-500/50 hover:bg-sky-500 text-sky-300 hover:text-slate-950 transition flex items-center gap-1">
+                👁️ 歸位「觀察者眼睛」最佳位置
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="flex items-center gap-1.5 text-amber-300 font-bold cursor-pointer">
+                <input type="checkbox" id="chk-photons" onchange="togglePhotons(this.checked)" class="rounded text-amber-500 focus:ring-0">
+                <span>✨ 動態光粒子流 (看光從哪射)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Canvas Wrapper -->
+          <div id="main-optics-stage" class="relative canvas-container w-full h-[430px] sm:h-[490px] select-none overflow-hidden">
+            <canvas id="mainOpticsCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+            <!-- Floating Hint Top-Left -->
+            <div class="absolute top-3 left-3 pointer-events-none flex flex-col gap-1.5 max-w-xs sm:max-w-md">
+              <div class="bg-slate-950/85 backdrop-blur-md border border-slate-700/80 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2 shadow-lg">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse shrink-0"></span>
+                <span class="text-slate-200 font-medium">💡 可直接拖曳畫布上的 <strong>🐱物體</strong>、<strong>📄實驗紙屏</strong>、<strong>👁️觀察者眼睛</strong> 或 <strong>焦點F</strong>！</span>
+              </div>
+              <div id="eyeWarningBanner" class="hidden bg-rose-950/95 backdrop-blur-md border border-rose-500 px-3 py-1.5 rounded-xl text-xs text-rose-200 font-bold shadow-lg">
+                <!-- Populated dynamically when eye is on wrong side -->
+              </div>
+              <div id="motionBannerOverlay" class="hidden bg-indigo-950/90 backdrop-blur-md border border-indigo-400/60 px-3 py-1.5 rounded-xl text-xs text-indigo-100 font-bold shadow-lg">
+                <!-- Populated dynamically during movement -->
+              </div>
+            </div>
+
+            <!-- Dual Floating Viewports (Top-Right): 1. 眼睛看到的畫面 vs 2. 紙屏上的投影畫面 -->
+            </div>
+          <div id="optics-viewports" class="flex flex-wrap gap-2 px-4 py-3 bg-slate-950 border-t border-slate-800">
+              <!-- Viewport A: Observer Eye View -->
+              <div class="w-36 sm:w-40 bg-slate-950/90 backdrop-blur-md border border-sky-500/40 rounded-2xl p-2 shadow-2xl">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[11px] font-bold text-sky-300 flex items-center gap-1">
+                    👁️ 眼睛看到的像
+                  </span>
+                  <span id="eyeViewBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">正立</span>
+                </div>
+                <div class="w-full h-20 sm:h-24 bg-slate-900/90 rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden">
+                  <canvas id="eyeViewportCanvas" width="150" height="96" class="w-full h-full"></canvas>
+                </div>
+                <div id="eyeStatusText" class="mt-1 text-[10px] text-center font-medium text-sky-300 leading-tight">
+                  實像與虛像眼睛皆可見
+                </div>
+              </div>
+
+              <!-- Viewport B: Paper Screen Surface Projection -->
+              <div class="w-36 sm:w-44 bg-slate-950/90 backdrop-blur-md border border-emerald-500/40 rounded-2xl p-2 shadow-2xl">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                    📄 紙屏表面投影
+                  </span>
+                  <span id="screenFocusBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">接近對焦</span>
+                </div>
+                <div class="w-full h-20 sm:h-24 bg-slate-900/90 rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden">
+                  <canvas id="screenViewportCanvas" width="160" height="96" class="w-full h-full"></canvas>
+                </div>
+                <div id="paperScreenStatusText" class="mt-1 text-[10px] text-center font-medium text-emerald-400 leading-tight">
+                  📄 紙屏位置可接收實像
+                </div>
+              </div>
+          </div>
+          <p id="image-outside-note" class="hidden px-4 pb-3 text-xs text-amber-300" role="status"></p>
+
+          <!-- NEW: 3 Key Roles Orientation Banner (光從哪射？紙屏在哪？眼睛在哪？) -->
+          <div class="bg-slate-900/95 border-t border-slate-800 px-4 py-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="bg-slate-950/90 border border-amber-500/30 rounded-xl p-2.5 flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-base shrink-0">💡</div>
+              <div class="text-xs leading-relaxed">
+                <div class="font-black text-amber-300">1. 光線從哪裡射？</div>
+                <div id="role-light-desc" class="text-slate-300 mt-0.5">從左側「物體」出發向右射向透鏡，經<strong>折射穿透透鏡</strong>至右側。</div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950/90 border border-emerald-500/30 rounded-xl p-2.5 flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-base shrink-0">📄</div>
+              <div class="text-xs leading-relaxed">
+                <div class="font-black text-emerald-300">2. 屏幕 (紙屏) 放哪裡？</div>
+                <div id="role-screen-desc" class="text-slate-300 mt-0.5">放在<strong>透鏡右側</strong>實像會聚處，紙屏可呈現清晰倒立實像！</div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950/90 border border-sky-500/30 rounded-xl p-2.5 flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-base shrink-0">👁️</div>
+              <div class="text-xs leading-relaxed">
+                <div class="font-black text-sky-300">3. 觀察者眼睛站哪裡？</div>
+                <div id="role-eye-desc" class="text-slate-300 mt-0.5">站在<strong>透鏡右側</strong>面向透鏡觀察，接收穿透出來的折射光線。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Controls: Sliders, Ray Toggles & Continuous Motion -->
+          <div class="p-4 bg-slate-950/90 border-t border-slate-800 space-y-3">
+            <!-- Sliders Row (4 Sliders: Object p, Screen s, Focal f, Height h) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800/80">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-slate-300">🐱 物距 <span class="mono text-sky-400">p</span> (物體在左側)</span>
+                  <span id="val-p" class="mono font-bold text-sky-300">220 cm</span>
+                </div>
+                <input type="range" id="slider-p" min="25" max="340" step="1" value="220" class="w-full" oninput="onSliderPChange(this.value)">
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>近鏡 (25)</span>
+                  <span>F</span>
+                  <span>2F</span>
+                  <span>遠處 (340)</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/90 p-3 rounded-xl border border-emerald-500/30">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-emerald-300">📄 紙屏座標 <span class="mono text-emerald-400">x</span> (左右拖曳對焦)</span>
+                  <span id="val-screen" class="mono font-bold text-emerald-300">右側 +183 cm</span>
+                </div>
+                <input type="range" id="slider-screen" min="-340" max="340" step="1" value="183" class="w-full" oninput="onSliderScreenChange(this.value)">
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>左側 (-340)</span>
+                  <span>鏡面 (0)</span>
+                  <span>右側 (+340)</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800/80">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-slate-300">🎯 焦距 <span class="mono text-amber-400">f</span> (鏡心或鏡頂到焦點的距離)</span>
+                  <span id="val-f" class="mono font-bold text-amber-300">100 cm</span>
+                </div>
+                <input type="range" id="slider-f" min="60" max="140" step="5" value="100" class="w-full" oninput="onSliderFChange(this.value)">
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>短 (60)</span>
+                  <span>標準 (100)</span>
+                  <span>長 (140)</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800/80">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-slate-300">📏 物長 <span class="mono text-emerald-400">h₀</span> (物體高度)</span>
+                  <span id="val-h" class="mono font-bold text-emerald-300">65 cm</span>
+                </div>
+                <input type="range" id="slider-h" min="35" max="100" step="1" value="65" class="w-full" oninput="onSliderHChange(this.value)">
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>小 (35)</span>
+                  <span>中 (65)</span>
+                  <span>大 (100)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ray Checkboxes & Continuous Motion Simulation Buttons -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <!-- Ray Toggles -->
+              <div class="flex flex-wrap items-center gap-3">
+                <label for="ray-display" class="text-xs font-bold text-slate-300">光路顯示</label>
+                <select id="ray-display" onchange="updateLab()" class="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100">
+                  <option value="principal">作圖光線</option>
+                  <option value="bundle">光束</option>
+                </select>
+                <span id="ray-mode-note" class="text-xs text-slate-400 hidden">黃、青兩束光分別來自物體頂端和底部。</span>
+                <label class="flex items-center gap-1.5 text-xs font-medium text-amber-300 cursor-pointer">
+                  <input type="checkbox" id="chk-ray1" checked onchange="updateLab()" class="rounded text-amber-500 focus:ring-0">
+                  <span>① 平行主軸光</span>
+                </label>
+                <label class="flex items-center gap-1.5 text-xs font-medium text-cyan-300 cursor-pointer">
+                  <input type="checkbox" id="chk-ray2" checked onchange="updateLab()" class="rounded text-cyan-500 focus:ring-0">
+                  <span>② 鏡心/頂點光</span>
+                </label>
+                <label class="flex items-center gap-1.5 text-xs font-medium text-pink-400 cursor-pointer">
+                  <input type="checkbox" id="chk-ray3" onchange="updateLab()" class="rounded text-pink-500 focus:ring-0">
+                  <span>③ 焦點光</span>
+                </label>
+                <label class="flex items-center gap-1.5 text-xs font-bold text-yellow-300 cursor-pointer border-l border-slate-700 pl-3">
+                  <input type="checkbox" id="chk-eyerays" onchange="updateLab()" class="rounded text-yellow-400 focus:ring-0">
+                  <span>👁️ 進眼視線光束 &amp; 大腦延伸線</span>
+                </label>
+                <label class="flex items-center gap-1.5 text-xs font-medium text-emerald-300 cursor-pointer">
+                  <input type="checkbox" id="chk-screen" checked onchange="updateLab()" class="rounded text-emerald-500 focus:ring-0">
+                  <span>📄 顯示實驗紙屏</span>
+                </label>
+              </div>
+
+              <!-- Auto Move Animation Buttons -->
+              <div class="flex items-center gap-2">
+                <button onclick="startContinuousMove('approach')" id="btn-move-approach" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition flex items-center gap-1">
+                  <span>▶️</span> 物體向鏡面靠近 (觀察移動方向)
+                </button>
+                <button onclick="startContinuousMove('recede')" id="btn-move-recede" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1">
+                  <span>◀️</span> 遠離鏡面
+                </button>
+                <button onclick="stopContinuousMove()" id="btn-move-stop" class="hidden px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-md transition">
+                  ⏹ 停止移動
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Telemetry, Concept HUD & Movement Rules (4 cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+          
+          <!-- Card 1: Real-time Imaging Properties -->
+          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+              <div>
+                <span id="hud-element-type" class="text-[11px] font-bold uppercase tracking-wider text-sky-400">會聚透鏡・光的折射</span>
+                <h2 id="hud-element-title" class="text-xl font-black text-white">凸透鏡成像分析</h2>
+              </div>
+              <div id="hud-zone-badge" class="px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                物在 2F 外
+              </div>
+            </div>
+
+            <!-- 4 Core Badges Grid (虛實 / 正倒 / 大小 / 成像位置) -->
+            <div class="grid grid-cols-2 gap-2.5 mb-3">
+              <div class="bg-slate-950/90 p-3 rounded-xl border border-slate-800/90">
+                <div class="text-[11px] text-slate-400 mb-0.5">實像或虛像 (紙屏成像)</div>
+                <div id="hud-real-virtual" class="text-base font-black text-emerald-400">實像 (紙屏可成像)</div>
+              </div>
+              <div class="bg-slate-950/90 p-3 rounded-xl border border-slate-800/90">
+                <div class="text-[11px] text-slate-400 mb-0.5">正立或倒立 (上下/左右)</div>
+                <div id="hud-orientation" class="text-base font-black text-amber-300">倒立 (上下顛倒/左右相反)</div>
+              </div>
+              <div class="bg-slate-950/90 p-3 rounded-xl border border-slate-800/90">
+                <div class="text-[11px] text-slate-400 mb-0.5">與原物大小比較</div>
+                <div id="hud-size" class="text-base font-black text-sky-300">縮小 (|M| &lt; 1)</div>
+              </div>
+              <div class="bg-slate-950/90 p-3 rounded-xl border border-slate-800/90">
+                <div class="text-[11px] text-slate-400 mb-0.5">成像位置區間</div>
+                <div id="hud-img-pos" class="text-sm font-black text-purple-300">異側 F ~ 2F 之間</div>
+              </div>
+            </div>
+
+            <!-- Quantitative Telemetry -->
+            <div class="bg-slate-950/60 rounded-xl p-2.5 border border-slate-800/60 grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div class="text-[10px] text-slate-400">物距 p</div>
+                <div id="hud-num-p" class="mono text-xs font-bold text-white">220 cm</div>
+              </div>
+              <div class="border-x border-slate-800">
+                <div class="text-[10px] text-slate-400">像距 |q|</div>
+                <div id="hud-num-q" class="mono text-xs font-bold text-sky-300">183.3 cm</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-400">放大率 M = 像長/物長</div>
+                <div id="hud-num-m" class="mono text-xs font-bold text-amber-300">0.83x</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Dynamic Movement Direction & Size Trend (會考必考重點) -->
+          <div class="bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-900 rounded-2xl border border-indigo-500/30 p-4 shadow-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded text-[11px] font-black bg-indigo-500 text-white">會考必考規律</span>
+              <h3 class="text-sm font-bold text-indigo-200">當物體向右靠近鏡面時...</h3>
+            </div>
+            
+            <div id="hud-movement-box" class="space-y-2 text-xs leading-relaxed text-slate-200 bg-slate-950/70 p-3 rounded-xl border border-indigo-500/20">
+              <!-- Dynamically updated -->
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-start gap-2 text-xs">
+              <span class="text-base">💡</span>
+              <div class="flex-1">
+                <span class="font-bold text-amber-300">生活應用實例：</span>
+                <span id="hud-application" class="text-slate-300">照相機、眼睛水晶體視網膜成像</span>
+              </div>
+            </div>
+
+            <!-- Live Illustrated Application Mini Card inside Lab -->
+            <div class="mt-2.5 bg-slate-950/90 rounded-xl p-2.5 border border-slate-800 flex items-center gap-3">
+              <div id="hud-app-svg" class="w-16 h-14 rounded-lg bg-slate-900 border border-slate-700/80 flex items-center justify-center shrink-0 overflow-hidden">
+                <!-- Dynamic SVG icon -->
+              </div>
+              <div class="text-[11px] leading-snug flex-1">
+                <div id="hud-app-card-title" class="font-bold text-sky-300">📷 照相機成像原理</div>
+                <div id="hud-app-card-desc" class="text-slate-400 mt-0.5">景物在 2F 外，經凸透鏡折射在感光元件上形成倒立縮小實像。</div>
+                <button onclick="switchMainTab('apps')" class="mt-1 text-[10px] font-bold text-amber-300 hover:underline">查看完整應用圖鑑与光路 ➔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Special Concave Mirror Torch Mode / Quick Concept Note -->
+          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-xl flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">口訣與破題關鍵</h3>
+              <div id="hud-mnemonic" class="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                <!-- Dynamic mnemonic -->
+              </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>實像：實際光線會聚 (必倒立)</span>
+              <span>虛像：延伸線交會 (必正立)</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 2: 多鏡同步比較模式 (Synchronized Multi-Mode Comparison)
+         ========================================== -->
+    <section id="section-compare" class="hidden space-y-4">
+      <!-- Top Control Panel for Synchronized Comparison -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-xl">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-lg font-black text-white flex items-center gap-2">
+              <span>⚖️</span> 多維度同步光學比較實驗室
+            </h2>
+            <p class="text-xs text-slate-400">拖動下方「同步物距滑桿」，同時觀察不同面鏡與透鏡在相同物距下的成像差異與移動方向！</p>
+          </div>
+
+          <!-- Comparison Preset Buttons -->
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setComparePreset('all4')" id="cmp-btn-all4" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-600 text-white shadow">
+              🔥 四大面鏡透鏡同台 (預設)
+            </button>
+            <button onclick="setComparePreset('insideF')" id="cmp-btn-insideF" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500 hover:text-slate-950 transition">
+              🎯 焦點內 (&lt; F) 虛像大比拚
+            </button>
+            <button onclick="setComparePreset('converging')" id="cmp-btn-converging" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
+              🔍 會聚組對決 (凸透鏡 vs 凹面鏡)
+            </button>
+            <button onclick="setComparePreset('diverging')" id="cmp-btn-diverging" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
+              🛡️ 發散組對決 (凹透鏡 vs 凸面鏡)
+            </button>
+          </div>
+        </div>
+
+        <!-- Master Synchronized Slider & Auto-Move -->
+        <div class="pt-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div class="md:col-span-7 bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="font-bold text-slate-200">同步物距滑桿 <span class="mono text-sky-400">p</span> (焦距固定 f = 100 cm)</span>
+              <span id="cmp-val-p" class="mono font-black text-sm text-sky-300">160 cm (F ~ 2F 之間)</span>
+            </div>
+            <input type="range" id="cmp-slider-p" min="30" max="300" value="160" class="w-full" oninput="onCompareSliderChange(this.value)">
+            <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+              <span class="text-amber-400 font-bold cursor-pointer" onclick="onCompareSliderChange(55)">◀ 點此跳至焦點內 (p=55)</span>
+              <span class="cursor-pointer" onclick="onCompareSliderChange(100)">焦點 F (100)</span>
+              <span class="cursor-pointer" onclick="onCompareSliderChange(150)">F~2F (150)</span>
+              <span class="cursor-pointer" onclick="onCompareSliderChange(200)">2F (200)</span>
+              <span class="text-sky-400 font-bold cursor-pointer" onclick="onCompareSliderChange(260)">2F外 (260) ▶</span>
+            </div>
+          </div>
+
+          <div class="md:col-span-5 flex flex-wrap items-center gap-2">
+            <button onclick="toggleCompareAutoMove()" id="cmp-auto-btn" class="flex-1 py-3 px-4 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition flex items-center justify-center gap-2">
+              <span>▶️</span> 自動向鏡面靠近 (比較四鏡像的移動方向)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Takeaway Banner in Compare Mode -->
+      <div id="cmp-insight-banner" class="bg-indigo-950/70 border border-indigo-500/40 rounded-xl px-4 py-3 text-xs sm:text-sm text-indigo-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div>
+          <strong class="text-amber-300">📌 關鍵比較發現：</strong>
+          <span id="cmp-insight-text">當物體向右靠近鏡面時：<strong>透鏡組（凸透鏡、凹透鏡）的像永遠跟著向右移（同向）</strong>；<strong>面鏡組（凹面鏡、凸面鏡）的像永遠向左移（反向）</strong>！</span>
+        </div>
+        <span class="text-[11px] mono px-2.5 py-1 rounded bg-slate-900/90 text-sky-300 shrink-0">f = 100 cm</span>
+      </div>
+
+      <!-- 2x2 Synchronized Mini Canvases Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Mini Canvas 1: 凸透鏡 -->
+        <div id="cmp-card-convex_lens" class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg flex flex-col">
+          <div class="px-3.5 py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+              <span class="font-black text-sm text-white">1. 凸透鏡 (會聚透鏡)</span>
+            </div>
+            <span id="cmp-badge-convex_lens" class="text-xs font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">倒立放大實像</span>
+          </div>
+          <div class="h-56 canvas-container relative">
+            <canvas id="cmp-canvas-convex_lens" class="w-full h-full block"></canvas>
+          </div>
+          <div id="cmp-desc-convex_lens" class="px-3.5 py-2 bg-slate-950/90 text-xs text-slate-300 border-t border-slate-800 flex justify-between">
+            <span>物體向右靠近 ➔ 像<strong>向右</strong>移動</span>
+            <span class="text-sky-400 font-bold cursor-pointer" onclick="jumpToLab('convex_lens')">單獨放大實作 ➔</span>
+          </div>
+        </div>
+
+        <!-- Mini Canvas 2: 凹面鏡 -->
+        <div id="cmp-card-concave_mirror" class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg flex flex-col">
+          <div class="px-3.5 py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+              <span class="font-black text-sm text-white">2. 凹面鏡 (會聚面鏡)</span>
+            </div>
+            <span id="cmp-badge-concave_mirror" class="text-xs font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">倒立放大實像</span>
+          </div>
+          <div class="h-56 canvas-container relative">
+            <canvas id="cmp-canvas-concave_mirror" class="w-full h-full block"></canvas>
+          </div>
+          <div id="cmp-desc-concave_mirror" class="px-3.5 py-2 bg-slate-950/90 text-xs text-slate-300 border-t border-slate-800 flex justify-between">
+            <span>物體向右靠近 ➔ 像<strong>向左</strong>移動</span>
+            <span class="text-amber-400 font-bold cursor-pointer" onclick="jumpToLab('concave_mirror')">單獨放大實作 ➔</span>
+          </div>
+        </div>
+
+        <!-- Mini Canvas 3: 凹透鏡 -->
+        <div id="cmp-card-concave_lens" class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg flex flex-col">
+          <div class="px-3.5 py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+              <span class="font-black text-sm text-white">3. 凹透鏡 (發散透鏡)</span>
+            </div>
+            <span id="cmp-badge-concave_lens" class="text-xs font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">正立縮小虛像</span>
+          </div>
+          <div class="h-56 canvas-container relative">
+            <canvas id="cmp-canvas-concave_lens" class="w-full h-full block"></canvas>
+          </div>
+          <div id="cmp-desc-concave_lens" class="px-3.5 py-2 bg-slate-950/90 text-xs text-slate-300 border-t border-slate-800 flex justify-between">
+            <span>物體向右靠近 ➔ 像<strong>向右靠近且漸大</strong></span>
+            <span class="text-purple-400 font-bold cursor-pointer" onclick="jumpToLab('concave_lens')">單獨放大實作 ➔</span>
+          </div>
+        </div>
+
+        <!-- Mini Canvas 4: 凸面鏡 -->
+        <div id="cmp-card-convex_mirror" class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg flex flex-col">
+          <div class="px-3.5 py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <span class="font-black text-sm text-white">4. 凸面鏡 (發散面鏡)</span>
+            </div>
+            <span id="cmp-badge-convex_mirror" class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">正立縮小虛像</span>
+          </div>
+          <div class="h-56 canvas-container relative">
+            <canvas id="cmp-canvas-convex_mirror" class="w-full h-full block"></canvas>
+          </div>
+          <div id="cmp-desc-convex_mirror" class="px-3.5 py-2 bg-slate-950/90 text-xs text-slate-300 border-t border-slate-800 flex justify-between">
+            <span>物體向右靠近 ➔ 像<strong>向左靠近且漸大</strong></span>
+            <span class="text-emerald-400 font-bold cursor-pointer" onclick="jumpToLab('convex_mirror')">單獨放大實作 ➔</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         NEW TAB: 光學應用圖鑑 (Illustrated Optical Applications + Ray Diagrams)
+         ========================================== -->
+    <section id="section-apps" class="hidden space-y-5">
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-5">
+          <div>
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">生活光學儀器・插圖與成像光路對照</span>
+            <h2 class="text-xl font-black text-white mt-0.5">📸 面鏡與透鏡日常生活應用圖鑑（配圖＋光線＋成像）</h2>
+            <p class="text-xs text-slate-400 mt-1">結合生活實境插圖與即時光線追蹤縮圖，一眼看懂光從哪裡射入、如何偏折、以及最後在哪裡成像！</p>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="filterAppsGallery('all')" id="app-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white">全部應用 (8)</button>
+            <button onclick="filterAppsGallery('lens')" id="app-filter-lens" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">🔍 透鏡折射應用</button>
+            <button onclick="filterAppsGallery('mirror')" id="app-filter-mirror" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">🪞 面鏡反射應用</button>
+            <button onclick="filterAppsGallery('eye')" id="app-filter-eye" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">👁️ 眼睛與視力矯正</button>
+          </div>
+        </div>
+
+        <!-- Applications Grid -->
+        <div id="apps-gallery-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Populated dynamically with SVG illustrations + Live Ray Canvas + Jump button -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 3: 成像總整理表 (Interactive Master Summary Table + Visual Guides & Cross Comparisons)
+         ========================================== -->
+    <section id="section-table" class="hidden space-y-6">
+      
+      <!-- Part 1: 4 Specialized Cross-Comparison Visual Tables (正立虛像 / 倒立實像 / 凹凸面鏡交叉 / 凹凸透鏡交叉) -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-xl space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">會考必背・圖文對照分類彙整</span>
+            <h2 class="text-xl font-black text-white mt-0.5">🗂️ 專題分類與交叉比較表（附光路成像導引縮圖）</h2>
+            <p class="text-xs text-slate-400 mt-0.5">切換下方四種必考交叉比較表，每列皆附有<strong>即時繪製的成像導引縮圖</strong>，點擊任一列可立即載入實驗室操作！</p>
+          </div>
+
+          <!-- Sub-tabs for the 4 Categorized Tables -->
+          <div class="flex flex-wrap gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+            <button onclick="switchCategoryTable('virtual_group')" id="cattab-virtual_group" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow">
+              👻 正立虛像大集合 (放大/縮小/相等)
+            </button>
+            <button onclick="switchCategoryTable('real_group')" id="cattab-real_group" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">
+              📄 倒立實像大集合 (縮小/相等/放大)
+            </button>
+            <button onclick="switchCategoryTable('mirror_cross')" id="cattab-mirror_cross" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">
+              🪞 凹面鏡 vs 凸面鏡 交叉比較表
+            </button>
+            <button onclick="switchCategoryTable('lens_cross')" id="cattab-lens_cross" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">
+              🔍 凸透鏡 vs 凹透鏡 交叉比較表
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Categorized Comparison Container -->
+        <div id="category-comparison-container" class="space-y-4">
+          <!-- Populated by JS with tables + inline ray-tracing guide thumbnails -->
+        </div>
+      </div>
+
+      <!-- Part 2: Complete Master Summary Table with Guide Thumbnails -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 class="text-xl font-black text-white">📊 五大鏡種全區間成像總表（附成像導引縮圖）</h2>
+            <p class="text-xs text-slate-400 mt-0.5">點擊表格中的<strong>任何一列或導引縮圖</strong>，即可直接跳轉至實驗室模擬該位置的成像光路！</p>
+          </div>
+
+          <!-- Quick Filter Buttons -->
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="filterSummaryTable('all')" id="tbl-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white">全部顯示</button>
+            <button onclick="filterSummaryTable('real')" id="tbl-filter-real" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-emerald-300 hover:bg-slate-700">📄 實像 (紙屏可成像)</button>
+            <button onclick="filterSummaryTable('virtual_mag')" id="tbl-filter-virtual_mag" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-amber-300 hover:bg-slate-700">🔍 正立放大虛像</button>
+            <button onclick="filterSummaryTable('virtual_dim')" id="tbl-filter-virtual_dim" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-purple-300 hover:bg-slate-700">🛡️ 正立縮小虛像</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-950 text-slate-300 border-b border-slate-800">
+                <th class="py-3 px-3 font-bold">光學鏡種</th>
+                <th class="py-3 px-3 font-bold">物體位置 (物距 p)</th>
+                <th class="py-3 px-3 font-bold text-center">成像導引縮圖 (物 ➔ 鏡 ➔ 像)</th>
+                <th class="py-3 px-3 font-bold">成像位置 (像距 q)</th>
+                <th class="py-3 px-3 font-bold">實虛與正倒</th>
+                <th class="py-3 px-3 font-bold">大小比較</th>
+                <th class="py-3 px-3 font-bold">物向右靠近鏡面時，像的變化</th>
+                <th class="py-3 px-3 font-bold">日常生活應用</th>
+                <th class="py-3 px-3 font-bold text-center">互動模擬</th>
+              </tr>
+            </thead>
+            <tbody id="summary-table-body" class="divide-y divide-slate-800/80 bg-slate-900/60">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Comparison Cards: 焦點內 (< F) 與 移動方向鐵律 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+          <h3 class="text-base font-black text-amber-300 mb-2 flex items-center gap-2">
+            <span>⚡</span> 必考比較一：當物體在「焦點內 (p &lt; F)」或任一處成虛像時
+          </h3>
+          <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+            <li class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+              <span><strong>凸透鏡 (焦點內)</strong> &amp; <strong>凹面鏡 (焦點內)</strong></span>
+              <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">正立放大虛像 (物近像近像漸小)</span>
+            </li>
+            <li class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+              <span><strong>凹透鏡 (任何位置)</strong> &amp; <strong>凸面鏡 (任何位置)</strong></span>
+              <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold">正立縮小虛像 (物近像近像漸大)</span>
+            </li>
+            <li class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+              <span><strong>平面鏡 (任何位置)</strong></span>
+              <span class="px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-bold">正立相等虛像 (物近像近大小不變)</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+          <h3 class="text-base font-black text-sky-300 mb-2 flex items-center gap-2">
+            <span>🧭</span> 必考比較二：物體移動方向 vs. 像移動方向
+          </h3>
+          <div class="space-y-2.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <div class="p-3 rounded-xl bg-sky-950/40 border border-sky-500/30">
+              <div class="font-bold text-sky-300 mb-0.5">✅ 透鏡鐵律 (凸透鏡、凹透鏡)：同向移動</div>
+              <p>物體在任何透鏡前向鏡面移動（向右），不論成實像或虛像，<strong>像移動的方向恆與物體移動方向相同（皆向右）</strong>！</p>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30">
+              <div class="font-bold text-amber-300 mb-0.5">✅ 面鏡鐵律 (凹面鏡、凸面鏡、平面鏡)：反向移動</div>
+              <p>物體在面鏡前向鏡面移動（向右），<strong>像移動的方向恆與物體移動方向相反（皆向左）</strong>！</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 4: 會考迷思挑戰 (Interactive Quiz & Myth-Buster)
+         ========================================== -->
+    <section id="section-quiz" class="hidden space-y-4">
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-5">
+          <div>
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">國中教育會考歷屆精選 &amp; 觀念迷思</span>
+            <h2 class="text-xl font-black text-white mt-0.5">🏆 光學成像互動闖關挑戰</h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-800 text-xs font-bold">
+              得分：<span id="quiz-score" class="text-sky-400 text-base font-black">0</span> / 5
+            </div>
+            <button onclick="resetQuiz()" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
+              🔄 重新測驗
+            </button>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // STATE & OPTICAL PHYSICS CONFIGURATION
+    // =========================================================================
+    const state = {
+      activeTab: 'lab',
+      element: 'convex_lens', // 'convex_lens' | 'concave_lens' | 'concave_mirror' | 'convex_mirror' | 'plane_mirror'
+      p: 220,                 // Object distance (cm / canvas units), or Infinity for parallel light
+      isInfinity: false,
+      f: 100,                 // Focal length (cm / canvas units)
+      h0: 65,                 // Object height
+      avatar: 'cat',          // 'cat' | 'candle' | 'arrow'
+      // Interactive Paper Screen position along axis (signed optical X: - is left, + is right)
+      screenX: 183,
+      autoSnapScreen: true,   // Automatically follow real image unless user drags screen manually
+      // Interactive Observer Eye position in optical coordinates (x, y where y>0 is above axis)
+      eyeX: 295,
+      eyeY: 55,
+      // Animated Light Photons
+      showPhotons: false,
+      photonPhase: 0,
+      photonAnimId: null,
+      // Continuous movement animation
+      moveDir: 0,             // -1 (approach mirror: p decreases), +1 (recede: p increases), 0 (stopped)
+      animFrameId: null,
+      // Dragging state on main canvas
+      draggingTarget: null,   // 'object' | 'focus' | 'screen' | 'eye' | null
+      // Compare mode state
+      cmpP: 160,
+      cmpAutoMove: false,
+      cmpMoveDir: -1
+    };
+
+    // Element metadata
+    const ELEMENT_META = {
+      convex_lens: {
+        name: '凸透鏡',
+        typeBadge: '會聚透鏡・光的折射',
+        principle: '折射 (中間厚、邊緣薄)',
+        isLens: true,
+        isConverging: true
+      },
+      concave_lens: {
+        name: '凹透鏡',
+        typeBadge: '發散透鏡・光的折射',
+        principle: '折射 (中間薄、邊緣厚)',
+        isLens: true,
+        isConverging: false
+      },
+      concave_mirror: {
+        name: '凹面鏡',
+        typeBadge: '會聚面鏡・光的反射',
+        principle: '反射 (凹面朝向物體)',
+        isLens: false,
+        isConverging: true
+      },
+      convex_mirror: {
+        name: '凸面鏡',
+        typeBadge: '發散面鏡・光的反射',
+        principle: '反射 (凸面朝向物體)',
+        isLens: false,
+        isConverging: false
+      },
+      plane_mirror: {
+        name: '平面鏡',
+        typeBadge: '對照基準・光的反射',
+        principle: '反射 (光滑平面)',
+        isLens: false,
+        isConverging: false
+      }
+    };
+
+    // =========================================================================
+    // PHYSICS CALCULATION ENGINE
+    // Coordinates: Optical center at (0, 0). Object is on the LEFT at x_o = -p (p > 0).
+    // Moving closer to the mirror/lens means moving RIGHT (dx_o > 0, dp < 0).
+    // =========================================================================
+    function formatObjectDistance(distance) {
+      const rounded = Math.round(distance * 100) / 100;
+      return Number.isInteger(rounded) && rounded !== distance
+        ? String(Number(distance.toPrecision(12)))
+        : String(rounded);
+    }
+
+    function computeOptics(element, p, f, h0, isInfinity = false) {
+      const res = {
+        element,
+        p,
+        f,
+        h0,
+        isInfinity,
+        xo: isInfinity ? -9999 : -p,
+        xi: null,          // Canvas X coordinate of image (+ is right, - is left)
+        q: null,           // Signed image distance
+        hi: 0,             // Signed image height (+ is upright, - is inverted)
+        m: 0,              // Magnification |hi / h0|
+        isReal: false,
+        isAtFocus: false,
+        zoneText: '',
+        posText: '',
+        realVirtualText: '',
+        orientText: '',
+        sizeText: '',
+        vxObj: 1,          // Object moves RIGHT (+1) when approaching mirror/lens
+        vxImg: 0,          // Image velocity sign (+1 = moves RIGHT, -1 = moves LEFT)
+        sizeTrendWhenApproaching: '',
+        moveSummaryHtml: '',
+        applicationText: '',
+        mnemonicHtml: '',
+        // 3 Roles Descriptions
+        roleLightHtml: '',
+        roleScreenHtml: '',
+        roleEyeHtml: ''
+      };
+
+      const isLens = ELEMENT_META[element].isLens;
+
+      // Handle Parallel Light from Infinity
+      if (isInfinity) {
+        res.zoneText = '無窮遠處 (平行光)';
+        if (element === 'convex_lens') {
+          res.xi = f;
+          res.q = f;
+          res.hi = 0;
+          res.isReal = true;
+          res.posText = '異側焦點 F₂ 上';
+          res.realVirtualText = '實像 (亮點)';
+          res.orientText = '縮成一點';
+          res.sizeText = '一點 (極小)';
+          res.applicationText = '凸透鏡會聚陽光點火、測量焦距';
+          res.moveSummaryHtml = '☀️ 平行主軸的光線經<strong>凸透鏡折射</strong>後，會聚於另一側的<strong>焦點上</strong>成為一個亮點。';
+        } else if (element === 'concave_lens') {
+          res.xi = -f;
+          res.q = -f;
+          res.hi = 0;
+          res.isReal = false;
+          res.posText = '同側虛焦點 F₁ 上';
+          res.realVirtualText = '虛像 (一點)';
+          res.orientText = '縮成一點';
+          res.sizeText = '一點 (極小)';
+          res.applicationText = '發散光線';
+          res.moveSummaryHtml = '☀️ 平行主軸的光線經<strong>凹透鏡折射</strong>後發散，反向延伸線交於同側的<strong>虛焦點 F₁</strong> 上。';
+        } else if (element === 'concave_mirror') {
+          res.xi = -f;
+          res.q = f;
+          res.hi = 0;
+          res.isReal = true;
+          res.posText = '鏡前焦點 F 上';
+          res.realVirtualText = '實像 (亮點)';
+          res.orientText = '縮成一點';
+          res.sizeText = '一點 (極小)';
+          res.applicationText = '太陽能集熱器、奧運聖火採集、古人「陽燧」取火';
+          res.moveSummaryHtml = '☀️ 平行主軸的太陽光照射<strong>凹面鏡反射</strong>後，會聚於鏡前<strong>焦點 F</strong> 上（陽燧取火原理）。';
+        } else if (element === 'convex_mirror') {
+          res.xi = f;
+          res.q = -f;
+          res.hi = 0;
+          res.isReal = false;
+          res.posText = '鏡後虛焦點 F 上';
+          res.realVirtualText = '虛像 (一點)';
+          res.orientText = '縮成一點';
+          res.sizeText = '一點 (極小)';
+          res.applicationText = '廣角反射';
+          res.moveSummaryHtml = '☀️ 平行光經<strong>凸面鏡反射</strong>後向外發散，延伸線交會於鏡後的<strong>虛焦點 F</strong>。';
+        } else {
+          res.xi = Infinity;
+          res.posText = '無窮遠處';
+          res.realVirtualText = '虛像';
+          res.orientText = '正立';
+          res.sizeText = '相等';
+          res.applicationText = '平面鏡單向反射';
+          res.moveSummaryHtml = '☀️ 平行光射至光滑平面鏡，反射光線依然互相平行（單向反射）。';
+        }
+        populateRolesDescriptions(res);
+        res.mnemonicHtml = getMnemonicHtml(element);
+        return res;
+      }
+
+      // Finite distance p
+
+      if (element === 'convex_lens') {
+        if (p === f) {
+          res.isAtFocus = true;
+          res.zoneText = '物在焦點上 (p = F)';
+          res.posText = '無窮遠 (無法成像)';
+          res.realVirtualText = '無有限距離的像';
+          res.orientText = '無';
+          res.sizeText = '無法成像';
+          res.applicationText = '探照燈平行光束';
+          res.moveSummaryHtml = '⚠️ 物體恰在<strong>焦點 F 上</strong>時，折射光線互相平行，不論實際光線或延伸線皆不交會，因此<strong>有限距離內接不到清楚的像</strong>。';
+        } else if (p > f) {
+          const q = (p * f) / (p - f);
+          res.q = q;
+          res.xi = q; // right side
+          res.hi = -h0 * (q / p);
+          res.m = Math.abs(q / p);
+          res.isReal = true;
+          res.realVirtualText = '實像 (紙屏可成像)';
+          res.orientText = '倒立 (上下顛倒/左右相反)';
+          res.vxImg = 1; // moves RIGHT (away from lens)
+
+          if (p === 2 * f) {
+            res.zoneText = '物在 2F 上 (p = 2F)';
+            res.posText = '異側 2F 上 (q = 2F)';
+            res.sizeText = '相等 (|M| = 1.0)';
+            res.applicationText = '等倍影印機、測定凸透鏡焦距 (10cm對稱題型)';
+          } else if (p > 2 * f) {
+            res.zoneText = '物在 2F 外 (p > 2F)';
+            res.posText = '異側 F ~ 2F 之間';
+            res.sizeText = '縮小 (|M| < 1)';
+            res.applicationText = '照相機、人類眼睛(水晶體)、攝影機';
+          } else {
+            res.zoneText = '物在 F ~ 2F 之間';
+            res.posText = '異側 2F 外 (q > 2F)';
+            res.sizeText = '放大 (|M| > 1)';
+            res.applicationText = '投影機、幻燈機、複式顯微鏡的「物鏡」';
+          }
+          res.moveSummaryHtml = `
+            <div>👉 <strong>移動方向：同向（皆向右）</strong></div>
+            <div>當物體向右靠近凸透鏡時，異側的<strong>倒立實像也向右遠離凸透鏡</strong>，且<strong>像愈來愈大</strong>！（物近・像遠・像變大）</div>
+          `;
+        } else {
+          // p < f (inside focal length)
+          const q = (p * f) / (p - f); // negative
+          res.q = q;
+          res.xi = q; // left side (same side as object)
+          res.hi = -h0 * (q / p); // positive (upright)
+          res.m = Math.abs(q / p);
+          res.isReal = false;
+          res.zoneText = '物在焦點內 (p < F)';
+          res.posText = '與物同側 (鏡前)';
+          res.realVirtualText = '虛像 (紙屏不成像)';
+          res.orientText = '正立 (左右相同)';
+          res.sizeText = '放大 (|M| > 1)';
+          res.vxImg = 1; // moves RIGHT (towards lens)
+          res.applicationText = '放大鏡、老花眼鏡/遠視眼鏡、顯微鏡的「目鏡」';
+          res.moveSummaryHtml = `
+            <div>👉 <strong>移動方向：同向（皆向右）</strong></div>
+            <div>物體在<strong>凸透鏡焦距內</strong>向右靠近凸透鏡時，同側的<strong>正立放大虛像也向右靠近凸透鏡</strong>，且<strong>像愈來愈小</strong>（逐漸趨近原物大小）！</div>
+          `;
+        }
+      } 
+      else if (element === 'concave_lens') {
+        const q = (-p * f) / (p + f); // always negative, in (-f, 0)
+        res.q = q;
+        res.xi = q; // left side, between -f and 0
+        res.hi = h0 * (f / (p + f)); // positive, < h0
+        res.m = f / (p + f);
+        res.isReal = false;
+        res.zoneText = p < f ? '物在焦點內 (p < F)' : (p > 2 * f ? '物在 2F 外' : '透鏡前任意位置');
+        res.posText = '同側焦點 F₁ 內';
+        res.realVirtualText = '虛像 (紙屏不成像)';
+        res.orientText = '正立 (左右相同)';
+        res.sizeText = '縮小 (|M| < 1)';
+        res.vxImg = 1; // moves RIGHT (towards lens)
+        res.applicationText = '近視眼鏡、防盜門眼(貓眼)';
+        res.moveSummaryHtml = `
+          <div>👉 <strong>移動方向：同向（皆向右）</strong></div>
+          <div>物體在<strong>凹透鏡前</strong>向右靠近凹透鏡時，同側焦距內的<strong>正立縮小虛像也向右靠近凹透鏡</strong>，且<strong>像愈來愈大</strong>（但永遠比原物小）！</div>
+        `;
+      }
+      else if (element === 'concave_mirror') {
+        if (p === f) {
+          res.isAtFocus = true;
+          res.zoneText = '物在焦點上 (p = F)';
+          res.posText = '無窮遠 (平行光射出)';
+          res.realVirtualText = '無有限距離的像';
+          res.orientText = '無';
+          res.sizeText = '無法成像';
+          res.applicationText = '汽車車前燈、手電筒、探照燈（光源置於焦點反射平行光）';
+          res.moveSummaryHtml = '🔦 當光源置於<strong>凹面鏡焦點 F 上</strong>時，焦點上發出的光會沿主軸方向平行反射，應用於汽車車前燈與手電筒！';
+        } else if (p > f) {
+          const q = (p * f) / (p - f); // positive (in front of mirror = left side)
+          res.q = q;
+          res.xi = -q; // left side
+          res.hi = -h0 * (q / p); // inverted
+          res.m = Math.abs(q / p);
+          res.isReal = true;
+          res.realVirtualText = '實像 (紙屏可成像)';
+          res.orientText = '倒立 (上下顛倒/左右相反)';
+          res.vxImg = -1; // moves LEFT (away from mirror)
+
+          if (p === 2 * f) {
+            res.zoneText = '物在 2F 上 (p = 2F)';
+            res.posText = '鏡前 2F 上';
+            res.sizeText = '相等 (|M| = 1.0)';
+          } else if (p > 2 * f) {
+            res.zoneText = '物在 2F 外 (p > 2F)';
+            res.posText = '鏡前 F ~ 2F 之間';
+            res.sizeText = '縮小 (|M| < 1)';
+          } else {
+            res.zoneText = '物在 F ~ 2F 之間';
+            res.posText = '鏡前 2F 外';
+            res.sizeText = '放大 (|M| > 1)';
+          }
+          res.applicationText = '反射式天文望遠鏡、太陽能集熱器';
+          res.moveSummaryHtml = `
+            <div>👈 <strong>移動方向：反向（物向右、像向左）</strong></div>
+            <div>物體在凹面鏡焦距外向右靠近鏡面時，鏡前的<strong>倒立實像向左遠離鏡面</strong>，且<strong>像愈來愈大</strong>！</div>
+          `;
+        } else {
+          // p < f (inside focal length of concave mirror)
+          const q = (p * f) / (p - f); // negative (behind mirror = right side)
+          res.q = q;
+          res.xi = -q; // positive (right side, behind mirror)
+          res.hi = -h0 * (q / p); // positive, magnified
+          res.m = Math.abs(q / p);
+          res.isReal = false;
+          res.zoneText = '物在焦點內 (p < F)';
+          res.posText = '鏡後 (異側)';
+          res.realVirtualText = '虛像 (紙屏不成像)';
+          res.orientText = '正立 (左右相反)';
+          res.sizeText = '放大 (|M| > 1)';
+          res.vxImg = -1; // moves LEFT (towards mirror from behind)
+          res.applicationText = '化妝鏡、牙醫口腔檢查鏡';
+          res.moveSummaryHtml = `
+            <div>👈 <strong>移動方向：反向（物向右、像向左靠近鏡面）</strong></div>
+            <div>物體在<strong>凹面鏡焦點內</strong>向右靠近鏡面時，鏡後的<strong>正立放大虛像向左靠近鏡面</strong>，且<strong>像愈來愈小</strong>（趨近原物大小）！</div>
+          `;
+        }
+      }
+      else if (element === 'convex_mirror') {
+        const q = (-p * f) / (p + f); // negative (behind mirror)
+        res.q = q;
+        res.xi = -q; // positive (right side, in (0, f))
+        res.hi = h0 * (f / (p + f)); // positive, diminished
+        res.m = f / (p + f);
+        res.isReal = false;
+        res.zoneText = p < f ? '物在鏡前 (p < F)' : '鏡前任意位置';
+        res.posText = '鏡後虛焦點 F 內';
+        res.realVirtualText = '虛像 (紙屏不成像)';
+        res.orientText = '正立 (左右相反)';
+        res.sizeText = '縮小 (|M| < 1)';
+        res.vxImg = -1; // moves LEFT (towards mirror from behind)
+        res.applicationText = '汽車後視鏡、山路轉角反射鏡、超商防盜廣角鏡';
+        res.moveSummaryHtml = `
+          <div>👈 <strong>移動方向：反向（物向右、像向左靠近鏡面）</strong></div>
+          <div>物體在<strong>凸面鏡前</strong>向右靠近鏡面時，鏡後焦點內的<strong>正立縮小虛像向左靠近鏡面</strong>，且<strong>像愈來愈大</strong>（但仍比原物小）！</div>
+        `;
+      }
+      else if (element === 'plane_mirror') {
+        res.q = -p;
+        res.xi = p; // right side, equal distance
+        res.hi = h0;
+        res.m = 1.0;
+        res.isReal = false;
+        res.zoneText = '鏡前任意位置';
+        res.posText = '鏡後等距處 (|q| = p)';
+        res.realVirtualText = '虛像 (紙屏不成像)';
+        res.orientText = '正立 (左右相反)';
+        res.sizeText = '大小相等 (|M| = 1.0)';
+        res.vxImg = -1; // moves LEFT
+        res.applicationText = '穿衣鏡、潛望鏡、萬花筒';
+        res.moveSummaryHtml = `
+          <div>👈 <strong>移動方向：反向對稱移動（物向右、像向左）</strong></div>
+          <div>物體向平面鏡靠近時，像也以相同速率向平面鏡靠近，<strong>像距永遠等於物距，且像的大小永遠不變</strong>（迷思破解：靠近鏡子像不會變大）！</div>
+        `;
+      }
+
+      populateRolesDescriptions(res);
+      res.mnemonicHtml = getMnemonicHtml(element);
+      return res;
+    }
+
+    // Populate the 3 Key Roles Card (1. 光從哪射 2. 紙屏放哪裡 3. 眼睛站哪裡)
+    function populateRolesDescriptions(res) {
+      const isLens = ELEMENT_META[res.element].isLens;
+      const name = ELEMENT_META[res.element].name;
+
+      // 1. Light Origin & Direction
+      if (isLens) {
+        res.roleLightHtml = `光從左側「<strong>物體</strong>」發出 ➔ 向右射入${name} ➔ 經<strong>折射穿透鏡片</strong>射向<strong>右側</strong>。`;
+      } else {
+        res.roleLightHtml = `光從左側「<strong>物體</strong>」發出 ➔ 向右射至${name} ➔ 被鏡面<strong>反射彈回左側（鏡前）</strong>，鏡後不透光！`;
+      }
+
+      // 2. Paper Screen Position
+      if (res.isAtFocus) {
+        res.roleScreenHtml = `光線折射/反射後互相平行，<strong>無論紙屏放在哪裡都無法成清晰像</strong>（僅有均勻光斑）。`;
+      } else if (res.isReal) {
+        const sideStr = isLens ? '透鏡右側 (異側)' : '面鏡左側 (鏡前同側)';
+        res.roleScreenHtml = `放在<strong>${sideStr}距離鏡面 ${Math.abs(res.xi).toFixed(0)} cm 處</strong>，實際光線在此會聚，紙屏可接住<strong>清晰倒立實像</strong>！`;
+      } else {
+        const virSideStr = isLens ? '透鏡左側 (同側)' : '面鏡右側 (鏡後)';
+        res.roleScreenHtml = `目前為<strong>虛像</strong>（位於${virSideStr}），是由延伸虛線交會而成，<strong>沒有實際光線會聚，紙屏放任何位置都無法成像</strong>！`;
+      }
+
+      // 3. Observer Eye Position
+      if (isLens) {
+        res.roleEyeHtml = `眼睛必須站在<strong>透鏡右側（與物體異側）向左看透鏡</strong>，接收穿透出來的折射光線（實像與虛像眼睛都看得到）。`;
+      } else {
+        res.roleEyeHtml = `眼睛必須站在<strong>面鏡左側（鏡前、與物體同側）向右看鏡面</strong>，接收反射回來的光線！`;
+      }
+    }
+
+    function getMnemonicHtml(element) {
+      if (element === 'convex_lens' || element === 'concave_mirror') {
+        return `
+          <div class="p-2 rounded-lg bg-slate-950 border border-slate-800">
+            <strong class="text-sky-300">🎯 會聚鏡（凸透鏡 / 凹面鏡）三大分界點：</strong><br>
+            • <strong>焦點 F</strong>：決定「實像 vs 虛像」（F外倒立實像、F內正立放大虛像）<br>
+            • <strong>兩倍焦距 2F</strong>：決定「放大 vs 縮小」（2F外縮小、2F相等、F~2F放大）<br>
+            • <strong>紙屏 vs 眼睛</strong>：實像可投射在紙屏上，也可直接用眼睛看；虛像紙屏抓不到，只能用眼睛透過鏡片看！
+          </div>
+        `;
+      } else if (element === 'concave_lens' || element === 'convex_mirror') {
+        return `
+          <div class="p-2 rounded-lg bg-slate-950 border border-slate-800">
+            <strong class="text-purple-300">🛡️ 發散鏡（凹透鏡 / 凸面鏡）必勝口訣：</strong><br>
+            • 不論物體放在鏡前任何位置（包含 2F外、F~2F、F內），永遠只在焦距內形成<strong>「正立縮小虛像」</strong>！<br>
+            • <strong>為什麼紙屏無法成像？</strong>因為光線經鏡片後向外發散，紙屏上只有模糊亮區，唯有<strong>眼睛</strong>接收發散光後，大腦往後延伸才看到虛像。
+          </div>
+        `;
+      } else {
+        return `
+          <div class="p-2 rounded-lg bg-slate-950 border border-slate-800">
+            <strong class="text-emerald-300">🪞 平面鏡四大考點：</strong><br>
+            1. 正立相等虛像、左右相反、像距＝物距。<br>
+            2. 欲看全身像，鏡長至少需<strong>身高的一半</strong>（與人離鏡遠近無關）。<br>
+            3. 鏡中時鐘與實際時間相加＝12:00。<br>
+            4. 入射線固定，平面鏡轉 θ 角，反射線轉 <strong>2θ 角</strong>。
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // CANVAS RENDERING ENGINE (Main Canvas + Mini Comparison Canvases)
+    // =========================================================================
+    function drawOpticalScene(canvas, opt, options = {}) {
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      if (canvas.width !== Math.round(rect.width * dpr) || canvas.height !== Math.round(rect.height * dpr)) {
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+      }
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      const W = rect.width;
+      const H = rect.height;
+      const cx = W * 0.5;
+      const cy = H * 0.55;
+      const scale = options.isMini ? Math.min(W / 680, H / 320) : Math.min(W / 760, H / 460);
+
+      // Clear & Draw Subtle Grid
+      ctx.clearRect(0, 0, W, H);
+      drawLabGrid(ctx, W, H, cx, cy, scale);
+
+      // Draw Zone Background Labels (鏡前 vs 鏡後/異側)
+      drawSideHeaders(ctx, opt.element, W, H, cx, cy, scale, options.isMini);
+
+      // Draw Principal Axis (主軸)
+      ctx.save();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(W, cy);
+      ctx.stroke();
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = `${Math.max(10, Math.round(11 * scale))}px "Noto Sans TC"`;
+      ctx.fillText('主軸', 10, cy - 6);
+      ctx.restore();
+
+      // Draw Optical Element (Lens or Mirror) at (cx, cy)
+      const lensHalfH = 132 * scale;
+      drawOpticalElementShape(ctx, opt.element, cx, cy, lensHalfH, scale);
+
+      // Draw Focal Points (F, 2F)
+      if (opt.element !== 'plane_mirror') {
+        drawFocalMarkers(ctx, opt.element, opt.f, cx, cy, scale, options.isMini);
+      }
+
+      // Draw Standard 3 Rays + Animated Photons
+      drawLightRays(ctx, opt, cx, cy, lensHalfH, W, scale, options);
+
+      if (!options.isMini) {
+        const note = document.getElementById('image-outside-note');
+        const outside = Number.isFinite(opt.xi) && Math.abs(opt.xi * scale) > cx - 12;
+        note.classList.toggle('hidden', !outside);
+        if (outside) {
+          note.textContent = `${opt.isReal ? '實像' : '虛像'}在畫布${opt.xi < 0 ? '左' : '右'}側之外，距鏡面 ${Math.abs(opt.xi).toFixed(1)} 公分。`;
+        }
+      }
+
+      // Draw Eye Cone Rays (進眼視線光束 & 大腦反向延伸虛線)
+      const showEyeRays = options.isMini ? true : document.getElementById('chk-eyerays').checked;
+      if (showEyeRays && !opt.isInfinity) {
+        drawEyeVisualBundle(ctx, opt, cx, cy, lensHalfH, scale, options.isMini);
+      }
+
+      // Draw Interactive Paper Screen (實體可拖曳實驗紙屏)
+      const showScreen = options.isMini ? true : document.getElementById('chk-screen').checked;
+      if (showScreen) {
+        const scrOptX = options.isMini
+          ? (opt.isReal && Number.isFinite(opt.xi) ? opt.xi : (ELEMENT_META[opt.element].isLens ? 140 : -140))
+          : state.screenX;
+        drawInteractivePaperScreen(ctx, opt, scrOptX, cx, cy, W, scale, options.isMini);
+      }
+
+      // Draw Object (at xo = -p) + Light Source Origin Marker ("💡光從這裡射出")
+      if (!opt.isInfinity) {
+        const objX = cx + opt.xo * scale;
+        const objH = opt.h0 * scale;
+        drawAvatarObject(ctx, state.avatar, objX, cy, objH, false, false, opt.element, scale, '物體');
+        drawLightSourceOriginBadge(ctx, objX, cy - objH, scale, options.isMini);
+
+        // Draw Velocity Arrow on Object if requested
+        if (options.showVelArrows || state.moveDir !== 0) {
+          const dir = state.moveDir !== 0 ? -state.moveDir : 1; // +1 means approaching (right)
+          drawVelocityVector(ctx, objX, cy + 30 * scale, dir, '#38bdf8', dir > 0 ? 'v物 (向右靠近)' : 'v物 (向左遠離)', scale);
+        }
+      }
+
+      // Draw Image (at xi)
+      if (!opt.isAtFocus && Number.isFinite(opt.xi)) {
+        const imgX = cx + opt.xi * scale;
+        const imgH = opt.hi * scale;
+
+        if (opt.isInfinity && opt.hi === 0) {
+          // Draw bright focal spot
+          ctx.save();
+          const grad = ctx.createRadialGradient(imgX, cy, 1, imgX, cy, 18 * scale);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.4, '#facc15');
+          grad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(imgX, cy, 18 * scale, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (Math.abs(imgX - cx) < W * 1.45) {
+          const isMirroredLR = !ELEMENT_META[opt.element].isLens && !opt.isReal;
+          drawAvatarObject(
+            ctx,
+            state.avatar,
+            imgX,
+            cy,
+            imgH,
+            !opt.isReal,
+            isMirroredLR,
+            opt.element,
+            scale,
+            opt.isReal ? '📍實像位置' : '👻虛像位置(延伸線交點)'
+          );
+
+          // Draw Velocity Arrow on Image
+          if ((options.showVelArrows || state.moveDir !== 0) && !opt.isInfinity) {
+            const objApproachSign = state.moveDir !== 0 ? -state.moveDir : 1;
+            const imgDir = opt.vxImg * objApproachSign;
+            const label = imgDir > 0 ? 'v像 (向右)' : 'v像 (向左)';
+            drawVelocityVector(ctx, imgX, cy + (opt.hi < 0 ? -Math.abs(imgH) - 24 * scale : 30 * scale), imgDir, '#f472b6', label, scale);
+          }
+        }
+      }
+
+      // Draw Interactive Observer Eye on Canvas
+      const eyeOptX = options.isMini ? (ELEMENT_META[opt.element].isLens ? 255 : -255) : state.eyeX;
+      const eyeOptY = options.isMini ? 48 : state.eyeY;
+      drawDraggableObserverEye(ctx, opt, eyeOptX, eyeOptY, cx, cy, scale, options.isMini);
+
+      ctx.restore();
+    }
+
+    // Draw Top/Bottom Side Zone Headers (清楚標示哪一側是入射側、哪一側是折射/反射觀察側)
+    function drawSideHeaders(ctx, element, W, H, cx, cy, scale, isMini) {
+      ctx.save();
+      const isLens = ELEMENT_META[element].isLens;
+      const yPos = isMini ? 16 : H - 12;
+      ctx.font = `bold ${Math.max(10, Math.round(11 * scale))}px "Noto Sans TC"`;
+
+      // Left Side Header
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#38bdf8';
+      if (isLens) {
+        ctx.fillText('◀ 左側：物體放置區 (入射光側) ｜ 虛像區', cx * 0.5, yPos);
+      } else {
+        ctx.fillText('◀ 左側 (鏡前)：物體 ＆ 反射光射出區 (👁️眼睛與📄實像紙屏在此側)', cx * 0.5, yPos);
+      }
+
+      // Right Side Header
+      if (isLens) {
+        ctx.fillStyle = '#34d399';
+        ctx.fillText('右側：折射光穿透區 (👁️眼睛觀察 ＆ 📄實像紙屏在此側) ▶', cx * 1.5, yPos);
+      } else {
+        ctx.fillStyle = '#c084fc';
+        ctx.fillText('右側 (鏡後不透光)：僅有大腦延伸線 (👻面鏡虛像區・無實際光線) ▶', cx * 1.5, yPos);
+      }
+      ctx.restore();
+    }
+
+    // Draw Light Source Badge on Object Top ("💡光從此射出")
+    function drawLightSourceOriginBadge(ctx, objX, objTopY, scale, isMini) {
+      ctx.save();
+      // Glowing pulsing aura at object tip
+      const pulse = 0.7 + 0.3 * Math.sin(state.photonPhase * Math.PI * 2);
+      const grad = ctx.createRadialGradient(objX, objTopY, 1, objX, objTopY, 14 * scale * pulse);
+      grad.addColorStop(0, '#fef08a');
+      grad.addColorStop(0.5, 'rgba(250, 204, 21, 0.55)');
+      grad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(objX, objTopY, 14 * scale * pulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(objX, objTopY, 3.8 * scale, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (!isMini) {
+        ctx.font = `bold ${Math.max(9, Math.round(10 * scale))}px "Noto Sans TC"`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fde047';
+        ctx.fillText('💡光從物體射出 ➔', objX, objTopY - 10 * scale);
+      }
+      ctx.restore();
+    }
+
+    // Draw Eye Visual Ray Bundle (進入觀察者眼睛的光束 + 大腦往後直線延伸虛線)
+    function drawEyeVisualBundle(ctx, opt, cx, cy, lensHalfH, scale, isMini) {
+      const isLens = ELEMENT_META[opt.element].isLens;
+      const eyeOptX = isMini ? (isLens ? 255 : -255) : state.eyeX;
+      const eyeOptY = isMini ? 48 : state.eyeY;
+
+      // Check if eye is on the valid outgoing light side
+      const eyeOnValidSide = isLens ? (eyeOptX > 15) : (eyeOptX < -15);
+      if (!eyeOnValidSide || opt.isAtFocus) return;
+
+      const objX = cx + opt.xo * scale;
+      const objTopY = cy - opt.h0 * scale;
+      const eyeCanvasX = cx + eyeOptX * scale;
+      const eyeCanvasY = cy - eyeOptY * scale;
+
+      const imgX = Number.isFinite(opt.xi) ? cx + opt.xi * scale : null;
+      const imgTopY = Number.isFinite(opt.hi) ? cy - opt.hi * scale : null;
+      if (imgX === null || imgTopY === null) return;
+
+      // Compute two rays from the image top to the upper and lower edges of the eye pupil
+      const pupilOffsets = [-5 * scale, 5 * scale];
+      const hitYs = [];
+
+      pupilOffsets.forEach(dy => {
+        const targetEyeY = eyeCanvasY + dy;
+        // Line connecting (imgX, imgTopY) and (eyeCanvasX, targetEyeY) intersects the mirror/lens plane x = cx
+        const t = (cx - imgX) / (eyeCanvasX - imgX);
+        const yAtLens = imgTopY + t * (targetEyeY - imgTopY);
+        // Clamp to lens aperture
+        const clampedY = Math.max(cy - lensHalfH * 0.92, Math.min(cy + lensHalfH * 0.92, yAtLens));
+        hitYs.push({ yLens: clampedY, yEye: targetEyeY });
+      });
+
+      ctx.save();
+      // 1. Fill semi-transparent yellow cone from object to lens, and lens to eye
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.13)';
+      ctx.beginPath();
+      ctx.moveTo(objX, objTopY);
+      ctx.lineTo(cx, hitYs[0].yLens);
+      ctx.lineTo(cx, hitYs[1].yLens);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(cx, hitYs[0].yLens);
+      ctx.lineTo(eyeCanvasX, hitYs[0].yEye);
+      ctx.lineTo(eyeCanvasX, hitYs[1].yEye);
+      ctx.lineTo(cx, hitYs[1].yLens);
+      ctx.closePath();
+      ctx.fill();
+
+      // 2. Draw solid edges of the eye cone
+      hitYs.forEach(h => {
+        drawRaySegment(ctx, objX, objTopY, cx, h.yLens, 'rgba(253, 224, 71, 0.75)', false, false, scale);
+        drawRaySegment(ctx, cx, h.yLens, eyeCanvasX, h.yEye, 'rgba(253, 224, 71, 0.9)', false, true, scale);
+        // Animated photon along eye ray
+        if (state.showPhotons) {
+          drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, h.yLens, eyeCanvasX, h.yEye, '#fef08a', scale);
+        }
+      });
+
+      // 3. If Virtual Image (or eye looking back at image), draw Brain Traceback Dashed Cone to Virtual Image
+      if (!opt.isReal) {
+        ctx.fillStyle = 'rgba(192, 132, 252, 0.14)';
+        ctx.beginPath();
+        ctx.moveTo(cx, hitYs[0].yLens);
+        ctx.lineTo(imgX, imgTopY);
+        ctx.lineTo(cx, hitYs[1].yLens);
+        ctx.closePath();
+        ctx.fill();
+
+        hitYs.forEach(h => {
+          drawRaySegment(ctx, cx, h.yLens, imgX, imgTopY, '#e879f9', true, false, scale);
+        });
+
+        if (!isMini) {
+          ctx.font = `bold ${Math.max(9, Math.round(10 * scale))}px "Noto Sans TC"`;
+          ctx.fillStyle = '#f0abfc';
+          ctx.textAlign = 'center';
+          ctx.fillText('🧠 視線反向延伸交會成虛像', (cx + imgX) * 0.5, Math.min(cy - 15 * scale, imgTopY - 8 * scale));
+        }
+      }
+      ctx.restore();
+    }
+
+    // Draw Draggable Observer Eye on Canvas
+    function drawDraggableObserverEye(ctx, opt, eyeOptX, eyeOptY, cx, cy, scale, isMini) {
+      const isLens = ELEMENT_META[opt.element].isLens;
+      const eyeOnValidSide = isLens ? (eyeOptX > 15) : (eyeOptX < -15);
+      const x = cx + eyeOptX * scale;
+      const y = cy - eyeOptY * scale;
+      const lookDir = eyeOptX >= 0 ? 'left' : 'right'; // always look toward the mirror/lens at cx
+
+      ctx.save();
+      ctx.translate(x, y);
+
+      // Outer interactive halo
+      ctx.fillStyle = eyeOnValidSide ? 'rgba(56, 189, 248, 0.16)' : 'rgba(244, 63, 94, 0.22)';
+      ctx.strokeStyle = eyeOnValidSide ? '#38bdf8' : '#f43f5e';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, 0, 18 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Eye anatomy oriented towards optical element
+      ctx.save();
+      if (lookDir === 'right') ctx.scale(-1, 1);
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(-12 * scale, 0);
+      ctx.quadraticCurveTo(0, -10 * scale, 12 * scale, 0);
+      ctx.quadraticCurveTo(0, 10 * scale, -12 * scale, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Iris & Pupil (looking left in local coords)
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.arc(-5 * scale, 0, 5 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(-6 * scale, 0, 2.5 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Label under Eye
+      ctx.font = `bold ${Math.max(9, Math.round(10.5 * scale))}px "Noto Sans TC"`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = eyeOnValidSide ? '#7dd3fc' : '#fda4af';
+      ctx.fillText(isMini ? '👁️觀察眼' : (eyeOnValidSide ? '👁️ 觀察者眼睛(可拖曳)' : '⚠️ 眼睛站錯邊了！'), 0, 28 * scale);
+      ctx.restore();
+    }
+
+    // Draw Interactive Paper Screen (實體可左右拖曳的紙屏 + 對焦清晰度/散焦模擬)
+    function drawInteractivePaperScreen(ctx, opt, scrOptX, cx, cy, W, scale, isMini) {
+      const screenCanvasX = cx + scrOptX * scale;
+      if (screenCanvasX < 10 || screenCanvasX > W - 10) return;
+
+      const isLens = ELEMENT_META[opt.element].isLens;
+      const lightReachesSide = isLens ? (scrOptX > 5) : (scrOptX < -5);
+
+      // Calculate Focus Sharpness (0 to 100%)
+      let sharpness = 0;
+      let distError = Infinity;
+      if (opt.isReal && Number.isFinite(opt.xi) && lightReachesSide) {
+        distError = Math.abs(scrOptX - opt.xi);
+        sharpness = Math.max(0, Math.round(100 * Math.exp(-distError / 28)));
+      }
+
+      const screenHalfH = 95 * scale;
+      const topY = cy - screenHalfH;
+      const botY = cy + screenHalfH;
+
+      ctx.save();
+
+      // 1. If Real Image exists, draw a subtle ghost target marker at exact focal plane opt.xi
+      if (!isMini && opt.isReal && Number.isFinite(opt.xi) && Math.abs(scrOptX - opt.xi) > 8) {
+        const targetX = cx + opt.xi * scale;
+        if (targetX > 15 && targetX < W - 15) {
+          ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
+          ctx.setLineDash([3, 3]);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(targetX, cy - 70 * scale);
+          ctx.lineTo(targetX, cy + 70 * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.font = `bold ${Math.max(9, Math.round(9.5 * scale))}px "Noto Sans TC"`;
+          ctx.fillStyle = '#6ee7b7';
+          ctx.textAlign = 'center';
+          ctx.fillText('📍最佳紙屏對焦處', targetX, cy - 75 * scale);
+        }
+      }
+
+      // 2. Draw Physical Stand & White/Translucent Paper Board
+      const isFocused = sharpness >= 88;
+      ctx.fillStyle = isFocused
+        ? 'rgba(16, 185, 129, 0.18)'
+        : (lightReachesSide ? 'rgba(248, 250, 252, 0.12)' : 'rgba(244, 63, 94, 0.08)');
+      ctx.strokeStyle = isFocused
+        ? '#10b981'
+        : (lightReachesSide ? '#cbd5e1' : '#f43f5e');
+      ctx.lineWidth = isFocused ? 2.8 : 2;
+
+      const boardW = 12 * scale;
+      ctx.beginPath();
+      ctx.roundRect(screenCanvasX - boardW / 2, topY, boardW, botY - topY, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      // Base Stand of Paper Screen
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(screenCanvasX - 14 * scale, botY, 28 * scale, 6 * scale);
+
+      // 3. Draw Light Blur Patch or Focused Image on the Screen Board
+      if (lightReachesSide) {
+        if (opt.isReal && Number.isFinite(opt.xi)) {
+          const blurRadius = Math.min(35 * scale, (distError / 4) * scale);
+          const projH = opt.hi * scale * (Math.abs(scrOptX) / Math.max(10, Math.abs(opt.xi)));
+          ctx.save();
+          ctx.globalAlpha = Math.max(0.25, sharpness / 100);
+          // Glow spot on screen
+          const grad = ctx.createRadialGradient(
+            screenCanvasX,
+            cy - projH * 0.5,
+            2,
+            screenCanvasX,
+            cy - projH * 0.5,
+            Math.max(10, Math.abs(projH) * 0.6 + blurRadius)
+          );
+          grad.addColorStop(0, isFocused ? '#6ee7b7' : '#fde047');
+          grad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(screenCanvasX - 16 * scale, topY, 32 * scale, botY - topY);
+          ctx.restore();
+        } else {
+          // Virtual image or at focus: only diffuse diverging light hits screen
+          const grad = ctx.createLinearGradient(screenCanvasX, topY, screenCanvasX, botY);
+          grad.addColorStop(0, 'rgba(253, 224, 71, 0)');
+          grad.addColorStop(0.5, 'rgba(253, 224, 71, 0.22)');
+          grad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(screenCanvasX - 8 * scale, topY, 16 * scale, botY - topY);
+        }
+      }
+
+      // 4. Status Label Above Paper Screen
+      ctx.font = `bold ${Math.max(9, Math.round(10.5 * scale))}px "Noto Sans TC"`;
+      ctx.textAlign = 'center';
+      let statusLabel = '';
+      if (!lightReachesSide) {
+        ctx.fillStyle = '#fb7185';
+        statusLabel = !opt.isReal && Number.isFinite(opt.xi) && Math.abs(scrOptX - opt.xi) < 25
+          ? '❌ 紙屏在虛像處：無實際光線，不成像！'
+          : '❌ 紙屏：光線未射達此側';
+      } else if (opt.isReal) {
+        if (isFocused) {
+          ctx.fillStyle = '#34d399';
+          statusLabel = `📄 紙屏：接近對焦`;
+        } else {
+          ctx.fillStyle = '#fbbf24';
+          statusLabel = `📄 紙屏：失焦模糊 ➔ 拖曳對焦`;
+        }
+      } else {
+        ctx.fillStyle = '#f472b6';
+        statusLabel = Math.abs(scrOptX - (opt.xi || 0)) < 25
+          ? '❌ 紙屏疊在虛像上：延伸線無光，無法成像！'
+          : '📄 紙屏：發散光無法會聚成實像';
+      }
+      ctx.fillText(statusLabel, screenCanvasX, topY - 8 * scale);
+
+      if (!isMini) {
+        ctx.font = `${Math.max(8, Math.round(9.5 * scale))}px "Noto Sans TC"`;
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('◀ 左右拖曳紙屏 ▶', screenCanvasX, botY + 18 * scale);
+      }
+      ctx.restore();
+    }
+
+    // Draw Animated Photon along a 2-segment ray path (Object -> Lens/Mirror -> Outgoing)
+    function drawPhotonAlongTwoSegments(ctx, x1, y1, x2, y2, x3, y3, color, scale) {
+      const numPhotons = 2;
+      for (let i = 0; i < numPhotons; i++) {
+        const t = (state.photonPhase + i / numPhotons) % 1;
+        let px, py;
+        if (t < 0.45) {
+          const u = t / 0.45;
+          px = x1 + (x2 - x1) * u;
+          py = y1 + (y2 - y1) * u;
+        } else {
+          const u = (t - 0.45) / 0.55;
+          px = x2 + (x3 - x2) * u;
+          py = y2 + (y3 - y2) * u;
+        }
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(px, py, 3.2 * scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function drawLabGrid(ctx, W, H, cx, cy, scale) {
+      const step = 25 * scale;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
+      ctx.lineWidth = 1;
+      for (let x = cx % step; x < W; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+      }
+      for (let y = cy % step; y < H; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawOpticalElementShape(ctx, element, cx, cy, halfH, scale) {
+      ctx.save();
+      // Vertical Reference Center Line (鏡心軸線)
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - halfH - 12);
+      ctx.lineTo(cx, cy + halfH + 12);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (element === 'convex_lens') {
+        const w = 22 * scale;
+        const grad = ctx.createLinearGradient(cx - w, cy - halfH, cx + w, cy + halfH);
+        grad.addColorStop(0, 'rgba(56, 189, 248, 0.42)');
+        grad.addColorStop(0.5, 'rgba(186, 230, 253, 0.22)');
+        grad.addColorStop(1, 'rgba(56, 189, 248, 0.42)');
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - halfH);
+        ctx.quadraticCurveTo(cx + w * 1.4, cy, cx, cy + halfH);
+        ctx.quadraticCurveTo(cx - w * 1.4, cy, cx, cy - halfH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (element === 'concave_lens') {
+        const wTop = 22 * scale;
+        const wMid = 7 * scale;
+        const grad = ctx.createLinearGradient(cx - wTop, cy - halfH, cx + wTop, cy + halfH);
+        grad.addColorStop(0, 'rgba(192, 132, 252, 0.42)');
+        grad.addColorStop(0.5, 'rgba(233, 213, 255, 0.2)');
+        grad.addColorStop(1, 'rgba(192, 132, 252, 0.42)');
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(cx - wTop, cy - halfH);
+        ctx.lineTo(cx + wTop, cy - halfH);
+        ctx.quadraticCurveTo(cx + wMid, cy, cx + wTop, cy + halfH);
+        ctx.lineTo(cx - wTop, cy + halfH);
+        ctx.quadraticCurveTo(cx - wMid, cy, cx - wTop, cy - halfH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (element === 'concave_mirror') {
+        // Concave side facing LEFT (towards object)
+        const curve = 22 * scale;
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - curve, cy - halfH);
+        ctx.quadraticCurveTo(cx + curve * 0.4, cy, cx - curve, cy + halfH);
+        ctx.stroke();
+        // Back hatching on right side of curve
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.3;
+        for (let t = 0; t <= 1; t += 0.06) {
+          const y = (cy - halfH) + t * (2 * halfH);
+          const u = (t - 0.5) * 2; // -1 to 1
+          const x = cx - curve * (u * u) + curve * 0.4 * (1 - u * u) * 0;
+          const xCurve = (1 - t) * (1 - t) * (cx - curve) + 2 * (1 - t) * t * (cx + curve * 0.4) + t * t * (cx - curve);
+          ctx.beginPath();
+          ctx.moveTo(xCurve, y);
+          ctx.lineTo(xCurve + 9 * scale, y - 6 * scale);
+          ctx.stroke();
+        }
+      } else if (element === 'convex_mirror') {
+        // Convex side bulging LEFT (towards object)
+        const curve = 22 * scale;
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(cx + curve, cy - halfH);
+        ctx.quadraticCurveTo(cx - curve * 0.4, cy, cx + curve, cy + halfH);
+        ctx.stroke();
+        // Back hatching on right (inside) side
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.3;
+        for (let t = 0; t <= 1; t += 0.06) {
+          const y = (cy - halfH) + t * (2 * halfH);
+          const xCurve = (1 - t) * (1 - t) * (cx + curve) + 2 * (1 - t) * t * (cx - curve * 0.4) + t * t * (cx + curve);
+          ctx.beginPath();
+          ctx.moveTo(xCurve, y);
+          ctx.lineTo(xCurve + 9 * scale, y - 6 * scale);
+          ctx.stroke();
+        }
+      } else if (element === 'plane_mirror') {
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - halfH);
+        ctx.lineTo(cx, cy + halfH);
+        ctx.stroke();
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.3;
+        for (let y = cy - halfH; y <= cy + halfH; y += 12 * scale) {
+          ctx.beginPath();
+          ctx.moveTo(cx, y);
+          ctx.lineTo(cx + 9 * scale, y - 6 * scale);
+          ctx.stroke();
+        }
+      }
+
+      // Draw Optical Center O / Vertex V label
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = `bold ${Math.max(10, Math.round(11 * scale))}px "JetBrains Mono"`;
+      ctx.fillText(ELEMENT_META[element].isLens ? 'O' : 'V', cx + 4, cy + 14 * scale);
+      ctx.restore();
+    }
+
+    function drawFocalMarkers(ctx, element, f, cx, cy, scale, isMini) {
+      ctx.save();
+      const points = [];
+      if (element === 'convex_lens' || element === 'concave_lens') {
+        points.push({ x: -f, label: 'F₁', isPrimary: true }, { x: -2 * f, label: '2F₁', isPrimary: false });
+        points.push({ x: f, label: 'F₂', isPrimary: true }, { x: 2 * f, label: '2F₂', isPrimary: false });
+      } else if (element === 'concave_mirror') {
+        points.push({ x: -f, label: 'F', isPrimary: true }, { x: -2 * f, label: '2F', isPrimary: false });
+        points.push({ x: f, label: "F'", isPrimary: false, virtual: true });
+      } else if (element === 'convex_mirror') {
+        points.push({ x: f, label: 'F(虛焦點)', isPrimary: true }, { x: 2 * f, label: '2F', isPrimary: false });
+        points.push({ x: -f, label: 'F', isPrimary: false, virtual: true });
+      }
+
+      points.forEach(pt => {
+        const px = cx + pt.x * scale;
+        ctx.fillStyle = pt.isPrimary ? '#fbbf24' : '#94a3b8';
+        ctx.beginPath();
+        ctx.arc(px, cy, (pt.isPrimary ? 4.5 : 3.2) * scale, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = `bold ${Math.max(9, Math.round(11 * scale))}px "JetBrains Mono"`;
+        ctx.textAlign = 'center';
+        ctx.fillText(pt.label, px, cy + 16 * scale);
+      });
+      ctx.restore();
+    }
+
+    function drawRaySegment(ctx, x1, y1, x2, y2, color, isDashed = false, withArrow = true, scale = 1) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = (isDashed ? 1.5 : 2.1) * Math.max(0.85, scale);
+      if (isDashed) {
+        ctx.setLineDash([5, 5]);
+      }
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (withArrow && !isDashed) {
+        const midX = x1 + (x2 - x1) * 0.55;
+        const midY = y1 + (y2 - y1) * 0.55;
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const aLen = 7 * Math.max(0.85, scale);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(midX + aLen * Math.cos(angle), midY + aLen * Math.sin(angle));
+        ctx.lineTo(midX - aLen * Math.cos(angle - Math.PI / 6), midY - aLen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(midX - aLen * Math.cos(angle + Math.PI / 6), midY - aLen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Trace a small fan from each object point using the same ideal optical
+    // model as the principal rays. Use distance along the outgoing direction.
+    function drawRayBundles(ctx, opt, cx, cy, width, scale) {
+      const isLens = ELEMENT_META[opt.element].isLens;
+      const direction = isLens ? 1 : -1;
+      const power = opt.element === 'plane_mirror' ? 0
+        : (opt.element === 'convex_lens' || opt.element === 'concave_mirror' ? 1 : -1) / opt.f;
+      const run = (isLens ? width - cx : cx) / scale;
+      const points = opt.isInfinity ? [{ height: 0, color: '#fbbf24' }]
+        : [{ height: opt.h0, color: '#fbbf24' }, { height: 0, color: '#38bdf8' }];
+
+      for (const { height, color } of points) {
+        for (const hitHeight of [-84, -56, -28, 0, 28, 56, 84]) {
+          const incomingSlope = opt.isInfinity ? 0 : (hitHeight - height) / opt.p;
+          const outgoingSlope = incomingSlope - hitHeight * power;
+          const hitY = cy - hitHeight * scale;
+          const startX = opt.isInfinity ? 0 : cx + opt.xo * scale;
+          const startY = opt.isInfinity ? hitY : cy - height * scale;
+          const endX = cx + direction * run * scale;
+          const endY = hitY - outgoingSlope * run * scale;
+          drawRaySegment(ctx, startX, startY, cx, hitY, color, false, hitHeight === 28, scale);
+          drawRaySegment(ctx, cx, hitY, endX, endY, color, false, hitHeight === 28, scale);
+          if (!opt.isReal && Number.isFinite(opt.xi)) {
+            const length = Math.min(Math.abs(opt.xi), run);
+            drawRaySegment(ctx, cx, hitY, cx - direction * length * scale,
+              hitY + outgoingSlope * length * scale, color, true, false, scale);
+          }
+        }
+      }
+    }
+
+    function drawLightRays(ctx, opt, cx, cy, lensHalfH, W, scale, options) {
+      if (!options.isMini && document.getElementById('ray-display').value === 'bundle') {
+        drawRayBundles(ctx, opt, cx, cy, W, scale);
+        return;
+      }
+
+      const show1 = options.isMini ? true : document.getElementById('chk-ray1').checked;
+      const show2 = options.isMini ? true : document.getElementById('chk-ray2').checked;
+      const show3 = options.isMini ? false : document.getElementById('chk-ray3').checked;
+
+      const cRay1 = '#fbbf24'; // Amber/Yellow: Parallel ray
+      const cRay2 = '#38bdf8'; // Cyan: Center/Vertex ray
+      const cRay3 = '#f472b6'; // Pink: Focal ray
+
+      const f = opt.f * scale;
+
+      // Case A: Parallel Light from Infinity
+      if (opt.isInfinity) {
+        const offsets = [-75, -40, 40, 75].map(v => v * scale);
+        offsets.forEach(dy => {
+          const yStart = cy - dy;
+          // Incident parallel ray from left edge to center plane
+          drawRaySegment(ctx, 0, yStart, cx, yStart, cRay1, false, true, scale);
+
+          if (opt.element === 'convex_lens') {
+            // Refracts through (+f, 0)
+            const slope = (cy - yStart) / f;
+            const xEnd = W;
+            const yEnd = yStart + slope * (xEnd - cx);
+            drawRaySegment(ctx, cx, yStart, xEnd, yEnd, cRay1, false, true, scale);
+          } else if (opt.element === 'concave_lens') {
+            // Diverges as if from (-f, 0)
+            const slope = (yStart - cy) / f;
+            const xEnd = W;
+            const yEnd = yStart + slope * (xEnd - cx);
+            drawRaySegment(ctx, cx, yStart, xEnd, yEnd, cRay1, false, true, scale);
+            drawRaySegment(ctx, cx, yStart, cx - f, cy, cRay1, true, false, scale);
+          } else if (opt.element === 'concave_mirror') {
+            // Reflects back to left through (-f, 0)
+            const slope = (cy - yStart) / (-f);
+            const xEnd = 0;
+            const yEnd = yStart + slope * (xEnd - cx);
+            drawRaySegment(ctx, cx, yStart, xEnd, yEnd, cRay1, false, true, scale);
+          } else if (opt.element === 'convex_mirror') {
+            // Reflects back to left as if from (+f, 0)
+            const slope = (yStart - cy) / (-f);
+            const xEnd = 0;
+            const yEnd = yStart + slope * (xEnd - cx);
+            drawRaySegment(ctx, cx, yStart, xEnd, yEnd, cRay1, false, true, scale);
+            drawRaySegment(ctx, cx, yStart, cx + f, cy, cRay1, true, false, scale);
+          } else if (opt.element === 'plane_mirror') {
+            drawRaySegment(ctx, cx, yStart, 0, yStart, cRay1, false, true, scale);
+          }
+        });
+        return;
+      }
+
+      // Case B: Finite Object at (objX, objTopY)
+      const objX = cx + opt.xo * scale;
+      const objTopY = cy - opt.h0 * scale;
+      const imgX = Number.isFinite(opt.xi) ? cx + opt.xi * scale : null;
+      const imgTopY = Number.isFinite(opt.hi) ? cy - opt.hi * scale : null;
+
+      if (opt.element === 'convex_lens') {
+        // Ray 1: Parallel to axis -> hits (cx, objTopY) -> refracts through (cx + f, cy)
+        if (show1) {
+          drawRaySegment(ctx, objX, objTopY, cx, objTopY, cRay1, false, true, scale);
+          const slope1 = (cy - objTopY) / f;
+          const xRight = W;
+          const yRight = objTopY + slope1 * (xRight - cx);
+          drawRaySegment(ctx, cx, objTopY, xRight, yRight, cRay1, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, objTopY, xRight, yRight, cRay1, scale);
+          if (!opt.isReal && imgX !== null) {
+            drawRaySegment(ctx, cx, objTopY, imgX, imgTopY, cRay1, true, false, scale);
+          }
+        }
+        // Ray 2: Through optical center (cx, cy) undeviated
+        if (show2) {
+          const slope2 = (cy - objTopY) / (cx - objX);
+          const xRight = W;
+          const yRight = cy + slope2 * (xRight - cx);
+          drawRaySegment(ctx, objX, objTopY, cx, cy, cRay2, false, true, scale);
+          drawRaySegment(ctx, cx, cy, xRight, yRight, cRay2, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, cy, xRight, yRight, cRay2, scale);
+          if (!opt.isReal && imgX !== null) {
+            drawRaySegment(ctx, cx, cy, imgX, imgTopY, cRay2, true, false, scale);
+          }
+        }
+        // Ray 3: Through left focus (cx - f, cy) -> hits lens at (cx, imgTopY) -> parallel to axis
+        if (show3 && !opt.isAtFocus && imgTopY !== null) {
+          drawRaySegment(ctx, objX, objTopY, cx, imgTopY, cRay3, false, true, scale);
+          drawRaySegment(ctx, cx, imgTopY, W, imgTopY, cRay3, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, imgTopY, W, imgTopY, cRay3, scale);
+          if (!opt.isReal && imgX !== null) {
+            drawRaySegment(ctx, cx, imgTopY, imgX, imgTopY, cRay3, true, false, scale);
+          }
+        }
+      }
+      else if (opt.element === 'concave_lens') {
+        // Ray 1: Parallel to axis -> hits (cx, objTopY) -> diverges from (cx - f, cy)
+        if (show1) {
+          drawRaySegment(ctx, objX, objTopY, cx, objTopY, cRay1, false, true, scale);
+          const slope1 = (objTopY - cy) / f;
+          const xRight = W;
+          const yRight = objTopY + slope1 * (xRight - cx);
+          drawRaySegment(ctx, cx, objTopY, xRight, yRight, cRay1, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, objTopY, xRight, yRight, cRay1, scale);
+          drawRaySegment(ctx, cx, objTopY, cx - f, cy, cRay1, true, false, scale);
+        }
+        // Ray 2: Through optical center (cx, cy)
+        if (show2) {
+          const slope2 = (cy - objTopY) / (cx - objX);
+          const xRight = W;
+          const yRight = cy + slope2 * (xRight - cx);
+          drawRaySegment(ctx, objX, objTopY, cx, cy, cRay2, false, true, scale);
+          drawRaySegment(ctx, cx, cy, xRight, yRight, cRay2, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, cy, xRight, yRight, cRay2, scale);
+        }
+        // Ray 3: Aimed at right focus (cx + f, cy) -> hits (cx, imgTopY) -> refracts parallel
+        if (show3 && imgTopY !== null) {
+          drawRaySegment(ctx, objX, objTopY, cx, imgTopY, cRay3, false, true, scale);
+          drawRaySegment(ctx, cx, imgTopY, W, imgTopY, cRay3, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, imgTopY, W, imgTopY, cRay3, scale);
+          drawRaySegment(ctx, cx, imgTopY, cx + f, cy, cRay3, true, false, scale);
+          drawRaySegment(ctx, cx, imgTopY, imgX, imgTopY, cRay3, true, false, scale);
+        }
+      }
+      else if (opt.element === 'concave_mirror') {
+        // Ray 1: Parallel to axis -> hits (cx, objTopY) -> reflects through (cx - f, cy)
+        if (show1) {
+          drawRaySegment(ctx, objX, objTopY, cx, objTopY, cRay1, false, true, scale);
+          const slope1 = (cy - objTopY) / (-f);
+          const xLeft = 0;
+          const yLeft = objTopY + slope1 * (xLeft - cx);
+          drawRaySegment(ctx, cx, objTopY, xLeft, yLeft, cRay1, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, objTopY, xLeft, yLeft, cRay1, scale);
+          if (!opt.isReal && imgX !== null) {
+            drawRaySegment(ctx, cx, objTopY, imgX, imgTopY, cRay1, true, false, scale);
+          }
+        }
+        // Ray 2: Hits vertex (cx, cy) -> reflects symmetrically
+        if (show2) {
+          drawRaySegment(ctx, objX, objTopY, cx, cy, cRay2, false, true, scale);
+          const symY = cy + (cy - objTopY);
+          const slope2 = (symY - cy) / (objX - cx);
+          const xLeft = 0;
+          const yLeft = cy + slope2 * (xLeft - cx);
+          drawRaySegment(ctx, cx, cy, xLeft, yLeft, cRay2, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, cy, xLeft, yLeft, cRay2, scale);
+          if (!opt.isReal && imgX !== null) {
+            drawRaySegment(ctx, cx, cy, imgX, imgTopY, cRay2, true, false, scale);
+          }
+        }
+        // Ray 3: Through focus (cx - f, cy) -> hits (cx, imgTopY) -> reflects parallel to left
+        if (show3 && !opt.isAtFocus && imgTopY !== null) {
+          drawRaySegment(ctx, objX, objTopY, cx, imgTopY, cRay3, false, true, scale);
+          drawRaySegment(ctx, cx, imgTopY, 0, imgTopY, cRay3, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, imgTopY, 0, imgTopY, cRay3, scale);
+          if (!opt.isReal && imgX !== null) {
+            drawRaySegment(ctx, cx, imgTopY, imgX, imgTopY, cRay3, true, false, scale);
+          }
+        }
+      }
+      else if (opt.element === 'convex_mirror') {
+        // Ray 1: Parallel to axis -> hits (cx, objTopY) -> reflects outward as if from (cx + f, cy)
+        if (show1) {
+          drawRaySegment(ctx, objX, objTopY, cx, objTopY, cRay1, false, true, scale);
+          const slope1 = (objTopY - cy) / (-f);
+          const xLeft = 0;
+          const yLeft = objTopY + slope1 * (xLeft - cx);
+          drawRaySegment(ctx, cx, objTopY, xLeft, yLeft, cRay1, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, objTopY, xLeft, yLeft, cRay1, scale);
+          drawRaySegment(ctx, cx, objTopY, cx + f, cy, cRay1, true, false, scale);
+        }
+        // Ray 2: Hits vertex (cx, cy) -> reflects symmetrically to left
+        if (show2) {
+          drawRaySegment(ctx, objX, objTopY, cx, cy, cRay2, false, true, scale);
+          const symY = cy + (cy - objTopY);
+          const slope2 = (symY - cy) / (objX - cx);
+          const xLeft = 0;
+          const yLeft = cy + slope2 * (xLeft - cx);
+          drawRaySegment(ctx, cx, cy, xLeft, yLeft, cRay2, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, cy, xLeft, yLeft, cRay2, scale);
+          drawRaySegment(ctx, cx, cy, imgX, imgTopY, cRay2, true, false, scale);
+        }
+        // Ray 3: Aimed at (cx + f, cy) -> hits (cx, imgTopY) -> reflects parallel to left
+        if (show3 && imgTopY !== null) {
+          drawRaySegment(ctx, objX, objTopY, cx, imgTopY, cRay3, false, true, scale);
+          drawRaySegment(ctx, cx, imgTopY, 0, imgTopY, cRay3, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, imgTopY, 0, imgTopY, cRay3, scale);
+          drawRaySegment(ctx, cx, imgTopY, cx + f, cy, cRay3, true, false, scale);
+          drawRaySegment(ctx, cx, imgTopY, imgX, imgTopY, cRay3, true, false, scale);
+        }
+      }
+      else if (opt.element === 'plane_mirror') {
+        if (show1) {
+          drawRaySegment(ctx, objX, objTopY, cx, objTopY, cRay1, false, true, scale);
+          drawRaySegment(ctx, cx, objTopY, 0, objTopY, cRay1, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, objTopY, 0, objTopY, cRay1, scale);
+          drawRaySegment(ctx, cx, objTopY, imgX, imgTopY, cRay1, true, false, scale);
+        }
+        if (show2) {
+          drawRaySegment(ctx, objX, objTopY, cx, cy, cRay2, false, true, scale);
+          const symY = cy + (cy - objTopY);
+          const slope2 = (symY - cy) / (objX - cx);
+          const yLeft = cy + slope2 * (0 - cx);
+          drawRaySegment(ctx, cx, cy, 0, yLeft, cRay2, false, true, scale);
+          if (state.showPhotons) drawPhotonAlongTwoSegments(ctx, objX, objTopY, cx, cy, 0, yLeft, cRay2, scale);
+          drawRaySegment(ctx, cx, cy, imgX, imgTopY, cRay2, true, false, scale);
+        }
+      }
+    }
+
+    function drawAvatarObject(ctx, avatar, x, baseY, signedH, isVirtual, isMirroredLR, element, scale, labelText) {
+      const h = Math.abs(signedH);
+      if (h < 2) return;
+      const isInverted = signedH < 0;
+
+      ctx.save();
+      ctx.translate(x, baseY);
+      if (isVirtual) {
+        ctx.globalAlpha = 0.68;
+      }
+
+      // Draw vertical stem or avatar body
+      ctx.save();
+      if (isInverted) ctx.scale(1, -1);
+      if (isMirroredLR) ctx.scale(-1, 1);
+
+      if (avatar === 'cat') {
+        // Cute Robot Cat Avatar (inspired by classic physics Flash animations)
+        const bodyH = h * 0.62;
+        const headR = Math.max(8 * scale, h * 0.24);
+        const bodyW = headR * 1.4;
+
+        // Body
+        ctx.fillStyle = isVirtual ? '#a855f7' : '#0284c7';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        if (isVirtual) ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.roundRect(-bodyW / 2, -bodyH, bodyW, bodyH, 6 * scale);
+        ctx.fill();
+        ctx.stroke();
+
+        // Red collar & yellow bell
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-bodyW * 0.45, -bodyH - 2 * scale, bodyW * 0.9, 4 * scale);
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(0, -bodyH, 3.2 * scale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Raised right hand (to clearly show Left-Right inversion!)
+        ctx.strokeStyle = isVirtual ? '#c084fc' : '#38bdf8';
+        ctx.lineWidth = 3.5 * scale;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(bodyW / 2, -bodyH * 0.65);
+        ctx.lineTo(bodyW / 2 + 10 * scale, -bodyH * 0.95);
+        ctx.stroke();
+
+        // Head
+        const headCY = -bodyH - headR * 0.85;
+        ctx.fillStyle = isVirtual ? '#c084fc' : '#38bdf8';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, headCY, headR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // White Face Patch
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.arc(0, headCY + headR * 0.12, headR * 0.72, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eyes & Red Nose
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(-headR * 0.28, headCY - headR * 0.1, headR * 0.13, 0, Math.PI * 2);
+        ctx.arc(headR * 0.28, headCY - headR * 0.1, headR * 0.13, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(0, headCY + headR * 0.12, headR * 0.14, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (avatar === 'candle') {
+        const candleW = Math.max(8 * scale, h * 0.22);
+        const candleH = h * 0.68;
+        const flameH = h * 0.32;
+
+        // Candle body
+        ctx.fillStyle = isVirtual ? '#e879f9' : '#ef4444';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        if (isVirtual) ctx.setLineDash([3, 3]);
+        ctx.fillRect(-candleW / 2, -candleH, candleW, candleH);
+        ctx.strokeRect(-candleW / 2, -candleH, candleW, candleH);
+
+        // Flame
+        ctx.setLineDash([]);
+        const grad = ctx.createRadialGradient(0, -candleH - flameH * 0.4, 1, 0, -candleH - flameH * 0.5, flameH * 0.7);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.4, '#fde047');
+        grad.addColorStop(1, '#f97316');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(0, -candleH - flameH);
+        ctx.quadraticCurveTo(candleW * 0.65, -candleH - flameH * 0.3, 0, -candleH);
+        ctx.quadraticCurveTo(-candleW * 0.65, -candleH - flameH * 0.3, 0, -candleH - flameH);
+        ctx.fill();
+      } else {
+        // Bold Arrow with Asymmetric 'P' flag to show Left-Right flip
+        const color = isVirtual ? '#e879f9' : '#38bdf8';
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 3.5 * scale;
+        if (isVirtual) ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -h);
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+        const aSize = Math.min(12 * scale, h * 0.35);
+        ctx.beginPath();
+        ctx.moveTo(0, -h);
+        ctx.lineTo(-aSize * 0.7, -h + aSize);
+        ctx.lineTo(aSize * 0.7, -h + aSize);
+        ctx.closePath();
+        ctx.fill();
+
+        // Asymmetric flag 'P' on right side of stem
+        ctx.beginPath();
+        ctx.arc(0, -h * 0.58, aSize * 0.55, -Math.PI / 2, Math.PI / 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Label below or above
+      if (labelText) {
+        ctx.globalAlpha = 1;
+        ctx.font = `bold ${Math.max(10, Math.round(11 * scale))}px "Noto Sans TC"`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = isVirtual ? '#f0abfc' : '#7dd3fc';
+        const labelY = isInverted ? 16 * scale : 18 * scale;
+        ctx.fillText(labelText, 0, labelY);
+      }
+      ctx.restore();
+    }
+
+    function drawVelocityVector(ctx, x, y, dirSign, color, label, scale) {
+      if (dirSign === 0) return;
+      const len = 36 * scale * dirSign;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 2.5 * scale;
+      ctx.beginPath();
+      ctx.moveTo(x - len * 0.4, y);
+      ctx.lineTo(x + len * 0.6, y);
+      ctx.stroke();
+
+      const tipX = x + len * 0.6;
+      const aSize = 6 * scale;
+      ctx.beginPath();
+      ctx.moveTo(tipX, y);
+      ctx.lineTo(tipX - dirSign * aSize, y - aSize * 0.7);
+      ctx.lineTo(tipX - dirSign * aSize, y + aSize * 0.7);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.font = `bold ${Math.max(9, Math.round(10 * scale))}px "Noto Sans TC"`;
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x + len * 0.1, y - 6 * scale);
+      ctx.restore();
+    }
+
+    // Render the Dual Mini Viewports in Top-Right:
+    // 1. eyeViewportCanvas (What the Observer Eye Sees)
+    // 2. screenViewportCanvas (What is projected on the Paper Screen at state.screenX)
+    function renderEyeViewport(opt) {
+      const eyeCanvas = document.getElementById('eyeViewportCanvas');
+      const ctx = eyeCanvas.getContext('2d');
+      const W = eyeCanvas.width;
+      const H = eyeCanvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const isLens = ELEMENT_META[opt.element].isLens;
+      const eyeOnValidSide = isLens ? (state.eyeX > 15) : (state.eyeX < -15);
+      const badge = document.getElementById('eyeViewBadge');
+      const eyeStatus = document.getElementById('eyeStatusText');
+      const warningBanner = document.getElementById('eyeWarningBanner');
+
+      // Subtle circular eye frame
+      ctx.save();
+      ctx.strokeStyle = eyeOnValidSide ? '#38bdf8' : '#f43f5e';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(W / 2, H / 2, 40, 0, Math.PI * 2);
+      ctx.stroke();
+
+      if (!eyeOnValidSide) {
+        badge.textContent = '站錯側';
+        badge.className = 'text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold';
+        eyeStatus.textContent = isLens ? '⚠️ 請將眼睛拖到透鏡右側' : '⚠️ 面鏡不透光，請移至鏡前(左側)';
+        eyeStatus.className = 'mt-1 text-[10px] text-center font-bold text-rose-400 leading-tight';
+
+        warningBanner.classList.remove('hidden');
+        warningBanner.innerHTML = isLens
+          ? '⚠️ <strong>觀察者眼睛站錯邊囉！</strong>透鏡是「光的折射」，光線向右穿透透鏡，請將 👁️ 眼睛拖曳到<strong>透鏡右側</strong>（或點上方歸位按鈕）！'
+          : '⚠️ <strong>觀察者眼睛站錯邊囉！</strong>面鏡背面不透光，光線反射回鏡前（左側），請將 👁️ 眼睛拖曳到<strong>面鏡左側</strong>觀察！';
+
+        ctx.fillStyle = '#f43f5e';
+        ctx.font = 'bold 11px "Noto Sans TC"';
+        ctx.textAlign = 'center';
+        ctx.fillText(isLens ? '未接收到折射光' : '鏡後不透光(全黑)', W / 2, H / 2 + 4);
+        ctx.restore();
+      } else {
+        warningBanner.classList.add('hidden');
+
+        if (opt.isAtFocus) {
+          badge.textContent = '像在無窮遠';
+          badge.className = 'text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold';
+          eyeStatus.textContent = '同一物點的出射光互相平行';
+          eyeStatus.className = 'mt-1 text-[10px] text-center font-medium text-amber-300 leading-tight';
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = 'bold 11px "Noto Sans TC"';
+          ctx.textAlign = 'center';
+          ctx.fillText('此處示意平行出射光', W / 2, H / 2 + 4);
+        } else if (opt.isInfinity) {
+          badge.textContent = '焦點亮點';
+          badge.className = 'text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold';
+          eyeStatus.textContent = '平行光會聚/發散於焦點';
+          const grad = ctx.createRadialGradient(W / 2, H / 2, 2, W / 2, H / 2, 22);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.4, '#facc15');
+          grad.addColorStop(1, 'rgba(250,204,21,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(W / 2, H / 2, 22, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          const clampedM = Math.max(0.28, Math.min(2.0, opt.m));
+          const drawH = 34 * clampedM * (opt.hi < 0 ? -1 : 1);
+          const baseY = opt.hi < 0 ? H / 2 - Math.abs(drawH) / 2 : H / 2 + Math.abs(drawH) / 2;
+          const isMirroredLR = !isLens && !opt.isReal;
+
+          drawAvatarObject(ctx, state.avatar, W / 2, baseY, drawH, !opt.isReal, isMirroredLR, opt.element, 0.78, '');
+          badge.textContent = `${opt.hi < 0 ? '倒立' : '正立'}・${opt.m > 1 ? '放大' : (opt.m < 1 ? '縮小' : '相等')}`;
+          badge.className = `text-[10px] px-1.5 py-0.5 rounded font-bold ${opt.isReal ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'}`;
+          eyeStatus.textContent = opt.isReal
+            ? '👁️ 眼睛接收實像發散光(可見)'
+            : '👁️ 大腦延伸發散光看到虛像';
+          eyeStatus.className = 'mt-1 text-[10px] text-center font-medium text-sky-300 leading-tight';
+        }
+        ctx.restore();
+      }
+
+      // Now render Viewport B: Paper Screen Surface Projection
+      renderPaperScreenViewport(opt);
+    }
+
+    function renderPaperScreenViewport(opt) {
+      const scrCanvas = document.getElementById('screenViewportCanvas');
+      if (!scrCanvas) return;
+      const ctx = scrCanvas.getContext('2d');
+      const W = scrCanvas.width;
+      const H = scrCanvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const isLens = ELEMENT_META[opt.element].isLens;
+      const scrX = state.screenX;
+      const lightReachesSide = isLens ? (scrX > 5) : (scrX < -5);
+
+      const focusBadge = document.getElementById('screenFocusBadge');
+      const screenText = document.getElementById('paperScreenStatusText');
+
+      ctx.save();
+      // Draw paper texture rectangle inside viewport
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(8, 6, W - 16, H - 12);
+
+      if (!lightReachesSide) {
+        focusBadge.textContent = '無光線';
+        focusBadge.className = 'text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold';
+        screenText.textContent = isLens
+          ? '❌ 紙屏在透鏡左側，折射光在右側'
+          : '❌ 紙屏在面鏡鏡後，光線被鏡面擋住';
+        screenText.className = 'mt-1 text-[10px] text-center font-medium text-rose-400 leading-tight';
+
+        ctx.fillStyle = '#f43f5e';
+        ctx.font = 'bold 11px "Noto Sans TC"';
+        ctx.textAlign = 'center';
+        ctx.fillText('紙屏背光 (全黑)', W / 2, H / 2 - 4);
+        ctx.font = '10px "Noto Sans TC"';
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('沒有實際光線射達此處', W / 2, H / 2 + 12);
+        ctx.restore();
+        return;
+      }
+
+      if (opt.isReal && Number.isFinite(opt.xi)) {
+        const distErr = Math.abs(scrX - opt.xi);
+        const sharpness = Math.max(0, Math.round(100 * Math.exp(-distErr / 28)));
+        const blurPx = Math.min(10, distErr / 8);
+
+        focusBadge.textContent = sharpness >= 88 ? '接近對焦' : '失焦示意';
+        focusBadge.className = `text-[10px] px-1.5 py-0.5 rounded font-bold ${sharpness >= 88 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`;
+
+        if (opt.isInfinity) {
+          ctx.filter = `blur(${blurPx.toFixed(1)}px)`;
+          const r = Math.max(4, 4 + distErr * 0.15);
+          const grad = ctx.createRadialGradient(W / 2, H / 2, 1, W / 2, H / 2, r * 2);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.5, '#facc15');
+          grad.addColorStop(1, 'rgba(250,204,21,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(W / 2, H / 2, r * 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.filter = 'none';
+        } else {
+          const clampedM = Math.max(0.28, Math.min(2.0, opt.m));
+          const drawH = 34 * clampedM * (opt.hi < 0 ? -1 : 1);
+          const baseY = opt.hi < 0 ? H / 2 - Math.abs(drawH) / 2 : H / 2 + Math.abs(drawH) / 2;
+
+          ctx.filter = `blur(${blurPx.toFixed(1)}px)`;
+          drawAvatarObject(ctx, state.avatar, W / 2, baseY, drawH, false, false, opt.element, 0.78, '');
+          ctx.filter = 'none';
+        }
+
+        if (sharpness >= 88) {
+          screenText.textContent = '紙屏在實像位置附近';
+          screenText.className = 'mt-1 text-[10px] text-center font-bold text-emerald-400 leading-tight';
+        } else {
+          screenText.textContent = `⚠️ 紙屏偏離實像 ${distErr.toFixed(0)}cm，影像失焦模糊`;
+          screenText.className = 'mt-1 text-[10px] text-center font-medium text-amber-300 leading-tight';
+        }
+      } else {
+        // The screen preview illustrates only rays emerging from the element.
+        focusBadge.textContent = '無法成像';
+        focusBadge.className = 'text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold';
+
+        // Draw diffuse diverging light halo on screen
+        const grad = ctx.createRadialGradient(W / 2, H / 2, 4, W / 2, H / 2, 42);
+        grad.addColorStop(0, 'rgba(253, 224, 71, 0.25)');
+        grad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(10, 8, W - 20, H - 16);
+
+        ctx.fillStyle = '#e879f9';
+        ctx.font = 'bold 11px "Noto Sans TC"';
+        ctx.textAlign = 'center';
+        ctx.fillText('僅有模糊光暈 (無實像)', W / 2, H / 2 - 3);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '9.5px "Noto Sans TC"';
+        ctx.fillText(opt.isAtFocus ? '同一物點的出射光互相平行' : '虛像位置沒有光線會聚', W / 2, H / 2 + 13);
+
+        screenText.textContent = opt.isAtFocus ? '物在焦點上，紙屏接不到清楚的像' : '紙屏接不到虛像';
+        screenText.className = 'mt-1 text-[10px] text-center font-medium text-purple-300 leading-tight';
+      }
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // UI UPDATES & CONTROLLERS
+    // =========================================================================
+    function updateLab() {
+      const opt = computeOptics(state.element, state.p, state.f, state.h0, state.isInfinity);
+      const meta = ELEMENT_META[state.element];
+
+      // Auto-position paper screen to real image if autoSnapScreen is active
+      if (state.autoSnapScreen && opt.isReal && Number.isFinite(opt.xi)) {
+        state.screenX = Math.max(-340, Math.min(340, Math.round(opt.xi)));
+      }
+
+      // Update 3 Key Roles Banner
+      document.getElementById('role-light-desc').innerHTML = opt.roleLightHtml;
+      document.getElementById('role-screen-desc').innerHTML = opt.roleScreenHtml;
+      document.getElementById('role-eye-desc').innerHTML = opt.roleEyeHtml;
+
+      const showBundle = document.getElementById('ray-display').value === 'bundle';
+      document.getElementById('ray-mode-note').classList.toggle('hidden', !showBundle);
+      document.getElementById('ray-mode-note').textContent = opt.isInfinity
+        ? '遠方物體的入射光在此以一束平行光表示。'
+        : '黃、青兩束光分別來自物體頂端和底部。';
+      for (const id of ['chk-ray1', 'chk-ray2', 'chk-ray3', 'chk-photons']) {
+        const control = document.getElementById(id);
+        const hidden = showBundle || (id === 'chk-ray3' && state.element === 'plane_mirror');
+        control.closest('label').classList.toggle('hidden', hidden);
+        control.closest('label').style.display = hidden ? 'none' : '';
+      }
+
+      // Update Top-Right HUD
+      document.getElementById('hud-element-type').textContent = meta.typeBadge;
+      document.getElementById('hud-element-title').textContent = `${meta.name}成像分析`;
+      document.getElementById('hud-zone-badge').textContent = opt.zoneText;
+
+      const rvEl = document.getElementById('hud-real-virtual');
+      rvEl.textContent = opt.realVirtualText;
+      rvEl.className = `text-base font-black ${opt.isAtFocus ? 'text-rose-400' : (opt.isReal ? 'text-emerald-400' : 'text-purple-300')}`;
+
+      const orEl = document.getElementById('hud-orientation');
+      orEl.textContent = opt.orientText;
+      orEl.className = `text-base font-black ${opt.hi < 0 ? 'text-amber-300' : 'text-sky-300'}`;
+
+      document.getElementById('hud-size').textContent = opt.sizeText;
+      document.getElementById('hud-img-pos').textContent = opt.posText;
+
+      document.getElementById('hud-num-p').textContent = opt.isInfinity ? '∞ (平行光)' : `${formatObjectDistance(opt.p)} cm`;
+      document.getElementById('hud-num-q').textContent = opt.isAtFocus ? '∞ (不交會)' : (Number.isFinite(opt.q) ? `${Math.abs(opt.q).toFixed(1)} cm` : '∞');
+      document.getElementById('hud-num-m').textContent = opt.isAtFocus || opt.isInfinity ? '-' : `${opt.m.toFixed(2)}x`;
+
+      document.getElementById('hud-movement-box').innerHTML = opt.moveSummaryHtml;
+      document.getElementById('hud-application').textContent = opt.applicationText;
+      document.getElementById('hud-mnemonic').innerHTML = opt.mnemonicHtml;
+      updateLabAppMiniCard(opt);
+
+      // Update slider labels
+      document.getElementById('val-p').textContent = opt.isInfinity ? '∞ 無窮遠' : `${formatObjectDistance(state.p)} cm`;
+      document.getElementById('slider-p').value = state.p;
+      document.getElementById('val-f').textContent = `${Math.round(state.f)} cm`;
+      document.getElementById('val-h').textContent = `${Math.round(state.h0)} cm`;
+
+      // Update Paper Screen slider & label
+      const scrSide = state.screenX >= 0 ? '右側 +' : '左側 ';
+      document.getElementById('val-screen').textContent = `${scrSide}${Math.round(state.screenX)} cm`;
+      document.getElementById('slider-screen').value = state.screenX;
+
+      // Render main canvas & dual top-right viewports
+      const mainCanvas = document.getElementById('mainOpticsCanvas');
+      drawOpticalScene(mainCanvas, opt, { isMini: false });
+      renderEyeViewport(opt);
+    }
+
+    function selectElement(el) {
+      stopContinuousMove();
+      state.element = el;
+      state.isInfinity = false;
+      state.autoSnapScreen = true;
+
+      // Automatically place Observer Eye & Paper Screen on the correct natural side when switching element
+      const isLens = ELEMENT_META[el].isLens;
+      state.eyeX = isLens ? 295 : -295;
+      state.eyeY = 55;
+      const opt = computeOptics(el, state.p, state.f, state.h0, false);
+      if (opt.isReal && Number.isFinite(opt.xi)) {
+        state.screenX = Math.max(-340, Math.min(340, Math.round(opt.xi)));
+      } else {
+        state.screenX = isLens ? 160 : -160;
+      }
+
+      ['convex_lens', 'concave_lens', 'concave_mirror', 'convex_mirror', 'plane_mirror'].forEach(k => {
+        const btn = document.getElementById(`el-btn-${k}`);
+        if (k === el) {
+          btn.classList.add('element-btn-active');
+        } else {
+          btn.classList.remove('element-btn-active');
+        }
+      });
+      updateLab();
+    }
+
+    function setQuickPosition(preset) {
+      stopContinuousMove();
+      state.isInfinity = false;
+      state.autoSnapScreen = true;
+      const f = state.f;
+      if (preset === 'infinity') {
+        state.isInfinity = true;
+      } else if (preset === 'beyond2F') {
+        state.p = Math.min(330, Math.round(2.5 * f));
+      } else if (preset === 'at2F') {
+        state.p = Math.round(2 * f);
+      } else if (preset === 'betweenF2F') {
+        state.p = Math.round(1.5 * f);
+      } else if (preset === 'atF') {
+        state.p = Math.round(f);
+      } else if (preset === 'insideF') {
+        state.p = Math.round(0.58 * f);
+      }
+      updateLab();
+    }
+
+    function setAvatar(av) {
+      state.avatar = av;
+      ['cat', 'candle', 'arrow'].forEach(k => {
+        const btn = document.getElementById(`avatar-${k}`);
+        if (k === av) {
+          btn.className = 'px-2 py-0.5 rounded text-xs font-bold bg-sky-600 text-white';
+        } else {
+          btn.className = 'px-2 py-0.5 rounded text-xs font-bold text-slate-400 hover:text-white';
+        }
+      });
+      updateLab();
+    }
+
+    function snapScreenToImage() {
+      const opt = computeOptics(state.element, state.p, state.f, state.h0, state.isInfinity);
+      state.autoSnapScreen = true;
+      if (opt.isReal && Number.isFinite(opt.xi)) {
+        state.screenX = Math.max(-340, Math.min(340, Math.round(opt.xi)));
+      } else {
+        const isLens = ELEMENT_META[state.element].isLens;
+        state.screenX = isLens ? 150 : -150;
+      }
+      updateLab();
+    }
+
+    function snapScreenToVirtual() {
+      const opt = computeOptics(state.element, state.p, state.f, state.h0, state.isInfinity);
+      state.autoSnapScreen = false;
+      if (!opt.isReal && Number.isFinite(opt.xi)) {
+        state.screenX = Math.max(-340, Math.min(340, Math.round(opt.xi)));
+      } else {
+        state.p = Math.round(0.6 * state.f);
+        state.isInfinity = false;
+        const opt2 = computeOptics(state.element, state.p, state.f, state.h0, false);
+        if (Number.isFinite(opt2.xi)) {
+          state.screenX = Math.max(-340, Math.min(340, Math.round(opt2.xi)));
+        }
+      }
+      updateLab();
+    }
+
+    function resetEyePosition() {
+      const isLens = ELEMENT_META[state.element].isLens;
+      state.eyeX = isLens ? 295 : -295;
+      state.eyeY = 55;
+      updateLab();
+    }
+
+    function togglePhotons(checked) {
+      state.showPhotons = checked;
+      updateLab();
+    }
+
+    function startPhotonAnimationLoop() {
+      function tick() {
+        state.photonPhase = (state.photonPhase + 0.008) % 1;
+        if (state.activeTab === 'lab' && state.showPhotons && state.moveDir === 0 && document.getElementById('ray-display').value === 'principal') {
+          const mainCanvas = document.getElementById('mainOpticsCanvas');
+          const opt = computeOptics(state.element, state.p, state.f, state.h0, state.isInfinity);
+          drawOpticalScene(mainCanvas, opt, { isMini: false });
+        }
+        state.photonAnimId = requestAnimationFrame(tick);
+      }
+      state.photonAnimId = requestAnimationFrame(tick);
+    }
+
+    function onSliderPChange(val) {
+      stopContinuousMove();
+      state.isInfinity = false;
+      state.p = parseFloat(val);
+      updateLab();
+    }
+
+    function onSliderScreenChange(val) {
+      state.autoSnapScreen = false;
+      state.screenX = parseFloat(val);
+      updateLab();
+    }
+
+    function onSliderFChange(val) {
+      stopContinuousMove();
+      state.f = parseFloat(val);
+      updateLab();
+    }
+
+    function onSliderHChange(val) {
+      state.h0 = parseFloat(val);
+      updateLab();
+    }
+
+    // Continuous Movement Animation (物體向鏡面靠近 / 遠離)
+    function startContinuousMove(mode) {
+      stopContinuousMove();
+      state.isInfinity = false;
+      state.moveDir = mode === 'approach' ? -1 : 1;
+
+      if (mode === 'approach' && state.p <= 35) {
+        state.p = 320;
+      } else if (mode === 'recede' && state.p >= 325) {
+        state.p = 35;
+      }
+
+      document.getElementById('btn-move-stop').classList.remove('hidden');
+      const banner = document.getElementById('motionBannerOverlay');
+      banner.classList.remove('hidden');
+
+      function step() {
+        if (state.moveDir === 0) return;
+        state.p += state.moveDir * 0.85;
+
+
+        if (state.p <= 28 || state.p >= 338) {
+          stopContinuousMove();
+          return;
+        }
+
+        const opt = computeOptics(state.element, state.p, state.f, state.h0, false);
+        const objDirStr = state.moveDir < 0 ? '向右靠近鏡面 (➔)' : '向左遠離鏡面 (⬅)';
+        const imgMoveSign = opt.vxImg * (-state.moveDir);
+        const imgDirStr = imgMoveSign > 0 ? '向右移動 (➔)' : '向左移動 (⬅)';
+        banner.innerHTML = `🏃 動態追蹤：物體<strong>${objDirStr}</strong> ｜ 像<strong>${imgDirStr}</strong> (${ELEMENT_META[state.element].isLens ? '透鏡物像同向' : '面鏡物像反向'})`;
+
+        updateLab();
+        state.animFrameId = requestAnimationFrame(step);
+      }
+
+      state.animFrameId = requestAnimationFrame(step);
+    }
+
+    function stopContinuousMove() {
+      state.moveDir = 0;
+      if (state.animFrameId) {
+        cancelAnimationFrame(state.animFrameId);
+        state.animFrameId = null;
+      }
+      const stopBtn = document.getElementById('btn-move-stop');
+      if (stopBtn) stopBtn.classList.add('hidden');
+      const banner = document.getElementById('motionBannerOverlay');
+      if (banner) banner.classList.add('hidden');
+      updateLab();
+    }
+
+    // =========================================================================
+    // CANVAS MOUSE / TOUCH DRAG INTERACTION (Direct Drag of Object, Paper Screen, Eye & Focus)
+    // =========================================================================
+    function initCanvasInteraction() {
+      const canvas = document.getElementById('mainOpticsCanvas');
+
+      function getPointerPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top,
+          W: rect.width,
+          H: rect.height
+        };
+      }
+
+      function onDown(e) {
+        const pos = getPointerPos(e);
+        const cx = pos.W * 0.5;
+        const cy = pos.H * 0.55;
+        const scale = Math.min(pos.W / 760, pos.H / 460);
+
+        const eyeCanvasX = cx + state.eyeX * scale;
+        const eyeCanvasY = cy - state.eyeY * scale;
+        const screenCanvasX = cx + state.screenX * scale;
+        const objX = cx - state.p * scale;
+        const fLeftX = cx - state.f * scale;
+        const fRightX = cx + state.f * scale;
+
+        if (Math.hypot(pos.x - eyeCanvasX, pos.y - eyeCanvasY) < 30) {
+          state.draggingTarget = 'eye';
+          stopContinuousMove();
+          e.preventDefault();
+        } else if (Math.abs(pos.x - screenCanvasX) < 22 && Math.abs(pos.y - cy) < 105 * scale) {
+          state.draggingTarget = 'screen';
+          state.autoSnapScreen = false;
+          stopContinuousMove();
+          e.preventDefault();
+        } else if (!state.isInfinity && Math.abs(pos.x - objX) < 34 && Math.abs(pos.y - (cy - state.h0 * scale * 0.5)) < state.h0 * scale + 30) {
+          state.draggingTarget = 'object';
+          stopContinuousMove();
+          e.preventDefault();
+        } else if (state.element !== 'plane_mirror' && (Math.hypot(pos.x - fLeftX, pos.y - cy) < 22 || Math.hypot(pos.x - fRightX, pos.y - cy) < 22)) {
+          state.draggingTarget = 'focus';
+          stopContinuousMove();
+          e.preventDefault();
+        } else if (pos.x < cx - 18) {
+          state.draggingTarget = 'object';
+          state.isInfinity = false;
+          stopContinuousMove();
+          state.p = Math.max(25, Math.min(340, (cx - pos.x) / scale));
+          updateLab();
+        }
+      }
+
+      function onMove(e) {
+        if (!state.draggingTarget) return;
+        const pos = getPointerPos(e);
+        const cx = pos.W * 0.5;
+        const cy = pos.H * 0.55;
+        const scale = Math.min(pos.W / 760, pos.H / 460);
+
+        if (state.draggingTarget === 'eye') {
+          state.eyeX = Math.max(-345, Math.min(345, (pos.x - cx) / scale));
+          state.eyeY = Math.max(-130, Math.min(155, (cy - pos.y) / scale));
+          updateLab();
+        } else if (state.draggingTarget === 'screen') {
+          state.autoSnapScreen = false;
+          state.screenX = Math.max(-340, Math.min(340, (pos.x - cx) / scale));
+          updateLab();
+        } else if (state.draggingTarget === 'object') {
+          state.isInfinity = false;
+          const newP = Math.max(25, Math.min(340, (cx - pos.x) / scale));
+          state.p = newP;
+          updateLab();
+        } else if (state.draggingTarget === 'focus') {
+          const newF = Math.max(60, Math.min(140, Math.abs(pos.x - cx) / scale));
+          state.f = Math.round(newF / 5) * 5;
+          document.getElementById('slider-f').value = state.f;
+          updateLab();
+        }
+      }
+
+      function onUp() {
+        state.draggingTarget = null;
+      }
+
+      canvas.addEventListener('mousedown', onDown);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+
+      canvas.addEventListener('touchstart', onDown, { passive: false });
+      window.addEventListener('touchmove', onMove, { passive: false });
+      window.addEventListener('touchend', onUp);
+    }
+
+    // =========================================================================
+    // TAB 2: SYNCHRONIZED MULTI-MIRROR/LENS COMPARISON MODE
+    // =========================================================================
+    function updateCompareMode() {
+      const p = state.cmpP;
+      const f = 100;
+      let zoneStr = '';
+      if (p === f) zoneStr = '(焦點 F 上)';
+      else if (p < f) zoneStr = '(焦點內 p < F)';
+      else if (p === 2 * f) zoneStr = '(2倍焦距 2F 上)';
+      else if (p < 2 * f) zoneStr = '(F ~ 2F 之間)';
+      else zoneStr = '(2倍焦距 2F 外)';
+
+      document.getElementById('cmp-val-p').textContent = `${formatObjectDistance(p)} cm ${zoneStr}`;
+      document.getElementById('cmp-slider-p').value = p;
+
+      const elements = ['convex_lens', 'concave_mirror', 'concave_lens', 'convex_mirror'];
+      elements.forEach(el => {
+        const canvas = document.getElementById(`cmp-canvas-${el}`);
+        const opt = computeOptics(el, p, f, 58, false);
+        drawOpticalScene(canvas, opt, { isMini: true, showVelArrows: true });
+
+        const badge = document.getElementById(`cmp-badge-${el}`);
+        if (opt.isAtFocus) {
+          badge.textContent = '無窮遠 (不成像)';
+        } else {
+          badge.textContent = `${opt.hi < 0 ? '倒立' : '正立'}${opt.m > 1 ? '放大' : (opt.m < 1 ? '縮小' : '相等')}${opt.isReal ? '實像' : '虛像'}`;
+        }
+      });
+
+      const insightEl = document.getElementById('cmp-insight-text');
+      if (p < f) {
+        insightEl.innerHTML = `🎯 <strong>焦點內 (p = ${Math.round(p)} cm &lt; F) 四鏡總對決：</strong>四者皆成<strong>正立虛像</strong>！但<strong>凸透鏡、凹面鏡為「正立放大虛像」</strong>（靠近時像變小）；<strong>凹透鏡、凸面鏡為「正立縮小虛像」</strong>（靠近時像變大）！`;
+      } else {
+        insightEl.innerHTML = `🧭 <strong>物像移動方向與實虛對決：</strong>在焦點外 (p = ${Math.round(p)} cm &gt; F)，<strong>凸透鏡与凹面鏡成「倒立實像」</strong>（紙屏可接）；<strong>凹透鏡與凸面鏡依然成「正立縮小虛像」</strong>。且透鏡物像同向移動（皆向右），面鏡物像反向移動！`;
+      }
+    }
+
+    function setComparePreset(preset) {
+      ['all4', 'insideF', 'converging', 'diverging'].forEach(k => {
+        const btn = document.getElementById(`cmp-btn-${k}`);
+        if (k === preset) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-600 text-white shadow';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition';
+        }
+      });
+
+      const c1 = document.getElementById('cmp-card-convex_lens');
+      const c2 = document.getElementById('cmp-card-concave_mirror');
+      const c3 = document.getElementById('cmp-card-concave_lens');
+      const c4 = document.getElementById('cmp-card-convex_mirror');
+      c1.classList.remove('hidden');
+      c2.classList.remove('hidden');
+      c3.classList.remove('hidden');
+      c4.classList.remove('hidden');
+
+      if (preset === 'insideF') {
+        state.cmpP = 58;
+      } else if (preset === 'converging') {
+        c3.classList.add('hidden');
+        c4.classList.add('hidden');
+        state.cmpP = 160;
+      } else if (preset === 'diverging') {
+        c1.classList.add('hidden');
+        c2.classList.add('hidden');
+        state.cmpP = 160;
+      }
+      setTimeout(updateCompareMode, 20);
+    }
+
+    function onCompareSliderChange(val) {
+      state.cmpP = parseFloat(val);
+      updateCompareMode();
+    }
+
+    function toggleCompareAutoMove() {
+      state.cmpAutoMove = !state.cmpAutoMove;
+      const btn = document.getElementById('cmp-auto-btn');
+      if (!state.cmpAutoMove) {
+        btn.innerHTML = '<span>▶️</span> 自動向鏡面靠近 (比較四鏡像的移動方向)';
+        btn.className = 'flex-1 py-3 px-4 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition flex items-center justify-center gap-2';
+        return;
+      }
+
+      btn.innerHTML = '<span>⏹</span> 停止自動移動';
+      btn.className = 'flex-1 py-3 px-4 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white shadow-lg transition flex items-center justify-center gap-2';
+
+      if (state.cmpP <= 38) state.cmpP = 285;
+
+      function stepCmp() {
+        if (!state.cmpAutoMove || state.activeTab !== 'compare') {
+          state.cmpAutoMove = false;
+          return;
+        }
+        state.cmpP -= 0.75;
+        if (state.cmpP <= 32) {
+          state.cmpP = 285;
+        }
+        updateCompareMode();
+        requestAnimationFrame(stepCmp);
+      }
+      requestAnimationFrame(stepCmp);
+    }
+
+    function jumpToLab(element, customP = null, isInf = false) {
+      switchMainTab('lab');
+      selectElement(element);
+      if (isInf) {
+        state.isInfinity = true;
+      } else if (customP !== null) {
+        state.isInfinity = false;
+        state.p = customP;
+      } else {
+        state.p = state.cmpP;
+      }
+      updateLab();
+    }
+
+    // =========================================================================
+    // TAB 3: INTERACTIVE SUMMARY TABLE (點擊任一列跳轉模擬)
+    // =========================================================================
+    const SUMMARY_ROWS = [
+      { el: 'convex_lens', name: '凸透鏡', prin: '折射(會聚)', pos: '無窮遠 (平行光)', pVal: 200, isInf: true, imgPos: '異側焦點 F₂ 上', rv: '實像', orient: '縮成一點', size: '極小一點', move: '會聚於焦點', app: '陽光點火、測焦距', tag: 'real' },
+      { el: 'convex_lens', name: '凸透鏡', prin: '折射(會聚)', pos: '2倍焦距外 (p > 2F)', pVal: 250, isInf: false, imgPos: '異側 F ~ 2F 之間', rv: '實像', orient: '倒立', size: '縮小', move: '像向右遠離、像漸大', app: '照相機、眼球水晶體', tag: 'real' },
+      { el: 'convex_lens', name: '凸透鏡', prin: '折射(會聚)', pos: '2倍焦距上 (p = 2F)', pVal: 200, isInf: false, imgPos: '異側 2F 上', rv: '實像', orient: '倒立', size: '相等', move: '像向右遠離、像漸大', app: '等倍影印、對稱測焦距', tag: 'real' },
+      { el: 'convex_lens', name: '凸透鏡', prin: '折射(會聚)', pos: 'F ~ 2F 之間', pVal: 150, isInf: false, imgPos: '異側 2F 外', rv: '實像', orient: '倒立', size: '放大', move: '像向右遠離、像漸大', app: '投影機、顯微鏡物鏡', tag: 'real' },
+      { el: 'convex_lens', name: '凸透鏡', prin: '折射(會聚)', pos: '焦點上 (p = F)', pVal: 100, isInf: false, imgPos: '無窮遠處', rv: '不成像', orient: '無', size: '無法成像', move: '折射光平行主軸', app: '產生平行光束', tag: 'none' },
+      { el: 'convex_lens', name: '凸透鏡', prin: '折射(會聚)', pos: '焦點內 (p < F)', pVal: 60, isInf: false, imgPos: '與物同側 (鏡前)', rv: '虛像', orient: '正立', size: '放大', move: '像向右靠近、像漸小', app: '放大鏡、老花眼鏡、目鏡', tag: 'virtual_mag' },
+
+      { el: 'concave_lens', name: '凹透鏡', prin: '折射(發散)', pos: '無窮遠 (平行光)', pVal: 200, isInf: true, imgPos: '同側虛焦點 F₁ 上', rv: '虛像', orient: '縮成一點', size: '極小一點', move: '延伸線交於虛焦點', app: '發散光線', tag: 'virtual_dim' },
+      { el: 'concave_lens', name: '凹透鏡', prin: '折射(發散)', pos: '鏡前任何位置', pVal: 170, isInf: false, imgPos: '同側焦點 F₁ 內', rv: '虛像', orient: '正立', size: '縮小', move: '像向右靠近、像漸大(仍小於物)', app: '近視眼鏡、防盜貓眼', tag: 'virtual_dim' },
+
+      { el: 'concave_mirror', name: '凹面鏡', prin: '反射(會聚)', pos: '無窮遠 (平行光)', pVal: 200, isInf: true, imgPos: '鏡前焦點 F 上', rv: '實像', orient: '縮成一點', size: '極小一點', move: '反射會聚於焦點', app: '太陽能集熱器、陽燧取火', tag: 'real' },
+      { el: 'concave_mirror', name: '凹面鏡', prin: '反射(會聚)', pos: '2倍焦距外 (p > 2F)', pVal: 250, isInf: false, imgPos: '鏡前 F ~ 2F 之間', rv: '實像', orient: '倒立', size: '縮小', move: '像向左遠離、像漸大', app: '反射式天文望遠鏡', tag: 'real' },
+      { el: 'concave_mirror', name: '凹面鏡', prin: '反射(會聚)', pos: '2倍焦距上 (p = 2F)', pVal: 200, isInf: false, imgPos: '鏡前 2F 上', rv: '實像', orient: '倒立', size: '相等', move: '像向左遠離、像漸大', app: '光學聚焦反射', tag: 'real' },
+      { el: 'concave_mirror', name: '凹面鏡', prin: '反射(會聚)', pos: 'F ~ 2F 之間', pVal: 150, isInf: false, imgPos: '鏡前 2F 外', rv: '實像', orient: '倒立', size: '放大', move: '像向左遠離、像漸大', app: '光學實驗', tag: 'real' },
+      { el: 'concave_mirror', name: '凹面鏡', prin: '反射(會聚)', pos: '焦點上 (p = F)', pVal: 100, isInf: false, imgPos: '無窮遠 (平行反射)', rv: '不成像', orient: '無', size: '無法成像', move: '反射光平行主軸射出', app: '汽車車前燈、手電筒', tag: 'none' },
+      { el: 'concave_mirror', name: '凹面鏡', prin: '反射(會聚)', pos: '焦點內 (p < F)', pVal: 60, isInf: false, imgPos: '鏡後 (異側)', rv: '虛像', orient: '正立', size: '放大', move: '像向左靠近、像漸小', app: '化妝鏡、牙醫口腔鏡', tag: 'virtual_mag' },
+
+      { el: 'convex_mirror', name: '凸面鏡', prin: '反射(發散)', pos: '鏡前任何位置', pVal: 170, isInf: false, imgPos: '鏡後虛焦點 F 內', rv: '虛像', orient: '正立', size: '縮小', move: '像向左靠近、像漸大(仍小於物)', app: '汽車後視鏡、路口轉角鏡', tag: 'virtual_dim' },
+
+      { el: 'plane_mirror', name: '平面鏡', prin: '反射(平面)', pos: '鏡前任何位置', pVal: 160, isInf: false, imgPos: '鏡後等距處 (|q|=p)', rv: '虛像', orient: '正立(左右相反)', size: '大小相等', move: '像向左靠近、大小永遠不變', app: '穿衣鏡、潛望鏡、萬花筒', tag: 'all' }
+    ];
+
+    function renderSummaryTable(filter = 'all') {
+      const tbody = document.getElementById('summary-table-body');
+      tbody.innerHTML = '';
+
+      ['all', 'real', 'virtual_mag', 'virtual_dim'].forEach(k => {
+        const btn = document.getElementById(`tbl-filter-${k}`);
+        if (!btn) return;
+        if (k === filter) {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700';
+        }
+      });
+
+      SUMMARY_ROWS.filter(r => filter === 'all' || r.tag === filter).forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-sky-500/10 cursor-pointer transition group';
+        tr.onclick = () => jumpToLab(r.el, r.pVal, r.isInf);
+
+        const badgeColor = r.rv === '實像'
+          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+          : (r.rv === '虛像' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30');
+
+        const canvasId = `tbl-thumb-${filter}-${idx}`;
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3">
+            <div class="font-black text-white">${r.name}</div>
+            <div class="text-[11px] text-slate-400">${r.prin}</div>
+          </td>
+          <td class="py-2.5 px-3 font-bold text-sky-300">${r.pos}</td>
+          <td class="py-2 px-2 text-center">
+            <div class="w-44 h-20 mx-auto rounded-lg bg-slate-950 border border-slate-700/80 overflow-hidden shadow-inner relative">
+              <canvas id="${canvasId}" width="176" height="80" class="w-full h-full block"></canvas>
+            </div>
+          </td>
+          <td class="py-2.5 px-3 text-slate-300">${r.imgPos}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded border text-xs font-bold ${badgeColor}">${r.orient}${r.rv}</span>
+          </td>
+          <td class="py-2.5 px-3 font-bold text-amber-300">${r.size}</td>
+          <td class="py-2.5 px-3 text-slate-300">${r.move}</td>
+          <td class="py-2.5 px-3 text-slate-300">${r.app}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="px-2.5 py-1 rounded-lg bg-sky-600/20 group-hover:bg-sky-500 text-sky-300 group-hover:text-white font-bold text-xs transition">▶ 模擬</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        // Draw schematic thumbnail on the row canvas
+        requestAnimationFrame(() => {
+          const c = document.getElementById(canvasId);
+          if (c) drawTableGuideThumb(c, r.el, r.pVal, 100, r.isInf);
+        });
+      });
+    }
+
+    function filterSummaryTable(filter) {
+      renderSummaryTable(filter);
+    }
+
+    // =========================================================================
+    // MINI GUIDE THUMBNAIL RENDERER FOR TABLES & CARDS (成像導引縮圖)
+    // =========================================================================
+    function drawTableGuideThumb(canvas, element, p, f = 100, isInf = false) {
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      const cx = W * 0.5;
+      const cy = H * 0.58;
+      const scale = 0.28; // 100cm * 0.28 = 28px focal length in thumbnail
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Principal Axis
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(4, cy);
+      ctx.lineTo(W - 4, cy);
+      ctx.stroke();
+
+      // Focal ticks F and 2F
+      if (element !== 'plane_mirror') {
+        [-2 * f, -f, f, 2 * f].forEach((fx, i) => {
+          const tx = cx + fx * scale;
+          ctx.fillStyle = (i === 1 || i === 2) ? '#fbbf24' : '#64748b';
+          ctx.beginPath();
+          ctx.arc(tx, cy, (i === 1 || i === 2) ? 2.2 : 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Draw Element Shape (compact)
+      const halfH = H * 0.42;
+      ctx.save();
+      if (element === 'convex_lens') {
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - halfH);
+        ctx.quadraticCurveTo(cx + 8, cy, cx, cy + halfH);
+        ctx.quadraticCurveTo(cx - 8, cy, cx, cy - halfH);
+        ctx.fill();
+        ctx.stroke();
+      } else if (element === 'concave_lens') {
+        ctx.fillStyle = 'rgba(192, 132, 252, 0.35)';
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - 6, cy - halfH);
+        ctx.lineTo(cx + 6, cy - halfH);
+        ctx.quadraticCurveTo(cx + 2, cy, cx + 6, cy + halfH);
+        ctx.lineTo(cx - 6, cy + halfH);
+        ctx.quadraticCurveTo(cx - 2, cy, cx - 6, cy - halfH);
+        ctx.fill();
+        ctx.stroke();
+      } else if (element === 'concave_mirror') {
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(cx - 5, cy - halfH);
+        ctx.quadraticCurveTo(cx + 4, cy, cx - 5, cy + halfH);
+        ctx.stroke();
+      } else if (element === 'convex_mirror') {
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(cx + 5, cy - halfH);
+        ctx.quadraticCurveTo(cx - 4, cy, cx + 5, cy + halfH);
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - halfH);
+        ctx.lineTo(cx, cy + halfH);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      const opt = computeOptics(element, p, f, 58, isInf);
+      const fPx = f * scale;
+
+      if (isInf) {
+        // Parallel rays from left
+        [-14, -7, 7, 14].forEach(dy => {
+          const y0 = cy - dy;
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          ctx.moveTo(6, y0);
+          ctx.lineTo(cx, y0);
+          ctx.stroke();
+
+          if (element === 'convex_lens') {
+            ctx.beginPath();
+            ctx.moveTo(cx, y0);
+            ctx.lineTo(cx + fPx, cy);
+            ctx.stroke();
+          } else if (element === 'concave_lens') {
+            const slope = (y0 - cy) / fPx;
+            ctx.beginPath();
+            ctx.moveTo(cx, y0);
+            ctx.lineTo(W - 4, y0 + slope * (W - 4 - cx));
+            ctx.stroke();
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(cx, y0);
+            ctx.lineTo(cx - fPx, cy);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          } else if (element === 'concave_mirror') {
+            ctx.beginPath();
+            ctx.moveTo(cx, y0);
+            ctx.lineTo(cx - fPx, cy);
+            ctx.stroke();
+          }
+        });
+        // Bright spot at focus
+        if (Number.isFinite(opt.xi)) {
+          const ix = cx + opt.xi * scale;
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.arc(ix, cy, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
+
+      // Finite Object Arrow (Cyan)
+      const objX = Math.max(12, cx - p * scale);
+      const objH = 20;
+      const objTopY = cy - objH;
+
+      // Draw simplified rays
+      if (!opt.isAtFocus && Number.isFinite(opt.xi)) {
+        const rawImgX = cx + opt.xi * scale;
+        const imgX = Math.max(10, Math.min(W - 10, rawImgX));
+        const clampedM = Math.max(0.35, Math.min(1.65, opt.m));
+        const imgH = objH * clampedM * (opt.hi < 0 ? -1 : 1);
+        const imgTopY = cy - imgH;
+
+        // Ray 1 (Amber) & Ray 2 (Cyan)
+        ctx.lineWidth = 1.1;
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
+        ctx.beginPath();
+        ctx.moveTo(objX, objTopY);
+        ctx.lineTo(cx, objTopY);
+        if (opt.isReal) {
+          ctx.lineTo(imgX, imgTopY);
+          ctx.stroke();
+        } else {
+          const outX = ELEMENT_META[element].isLens ? W - 4 : 4;
+          const slope = (objTopY - imgTopY) / (cx - imgX);
+          ctx.lineTo(outX, objTopY + slope * (outX - cx));
+          ctx.stroke();
+          ctx.save();
+          ctx.setLineDash([2, 2]);
+          ctx.strokeStyle = '#e879f9';
+          ctx.beginPath();
+          ctx.moveTo(cx, objTopY);
+          ctx.lineTo(imgX, imgTopY);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Center/Vertex Ray
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+        ctx.beginPath();
+        ctx.moveTo(objX, objTopY);
+        ctx.lineTo(cx, cy);
+        if (opt.isReal) {
+          ctx.lineTo(imgX, imgTopY);
+          ctx.stroke();
+        } else {
+          ctx.stroke();
+          ctx.save();
+          ctx.setLineDash([2, 2]);
+          ctx.strokeStyle = '#e879f9';
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(imgX, imgTopY);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Draw Image Arrow
+        drawMiniArrow(ctx, imgX, cy, imgTopY, opt.isReal ? '#10b981' : '#e879f9', !opt.isReal);
+        ctx.fillStyle = opt.isReal ? '#6ee7b7' : '#f0abfc';
+        ctx.font = 'bold 9px "Noto Sans TC"';
+        ctx.textAlign = 'center';
+        ctx.fillText(opt.isReal ? '實像' : '虛像', imgX, imgH < 0 ? cy - 4 : cy + 10);
+      } else {
+        // At Focus: Parallel outgoing rays
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(objX, objTopY);
+        ctx.lineTo(cx, objTopY);
+        ctx.lineTo(ELEMENT_META[element].isLens ? W - 4 : 4, cy + 12);
+        ctx.stroke();
+        ctx.fillStyle = '#fb7185';
+        ctx.font = 'bold 9px "Noto Sans TC"';
+        ctx.fillText('平行不成像', cx + (ELEMENT_META[element].isLens ? 42 : -42), cy - 8);
+      }
+
+      // Draw Object Arrow on top
+      drawMiniArrow(ctx, objX, cy, objTopY, '#38bdf8', false);
+      ctx.fillStyle = '#7dd3fc';
+      ctx.font = 'bold 9px "Noto Sans TC"';
+      ctx.textAlign = 'center';
+      ctx.fillText('物', objX, cy + 10);
+    }
+
+    function drawMiniArrow(ctx, x, baseY, tipY, color, isDashed) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 2;
+      if (isDashed) ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(x, baseY);
+      ctx.lineTo(x, tipY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const dir = tipY < baseY ? -1 : 1;
+      ctx.beginPath();
+      ctx.moveTo(x, tipY);
+      ctx.lineTo(x - 3.5, tipY - dir * 5);
+      ctx.lineTo(x + 3.5, tipY - dir * 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // 4 SPECIALIZED CROSS-COMPARISON TABLES (正立虛像 / 倒立實像 / 凹凸面鏡 / 凹凸透鏡)
+    // =========================================================================
+    const CATEGORY_TABLES = {
+      virtual_group: {
+        title: '👻 【正立虛像】全鏡種分類彙整表（放大 vs. 相等 vs. 縮小）',
+        subtitle: '凡是「虛像」必定正立、由光線反向延伸交會而成、無法在紙屏上成像，必須用眼睛觀察！',
+        rows: [
+          { badge: '正立放大虛像', badgeCls: 'bg-amber-500/20 text-amber-300 border-amber-500/40', el: 'convex_lens', pVal: 58, name: '凸透鏡', cond: '物在焦點內 (p < F)', imgPos: '與物同側 (鏡前)', move: '物向右靠近 ➔ 像向右靠近、像漸小', app: '🔍 放大鏡、老花眼鏡、顯微鏡目鏡' },
+          { badge: '正立放大虛像', badgeCls: 'bg-amber-500/20 text-amber-300 border-amber-500/40', el: 'concave_mirror', pVal: 58, name: '凹面鏡', cond: '物在焦點內 (p < F)', imgPos: '鏡後 (異側)', move: '物向右靠近 ➔ 像向左靠近、像漸小', app: '💄 梳妝放大化妝鏡、牙醫口鏡' },
+          { badge: '正立相等虛像', badgeCls: 'bg-slate-700 text-slate-200 border-slate-600', el: 'plane_mirror', pVal: 140, name: '平面鏡', cond: '鏡前任何位置', imgPos: '鏡後等距處 (|q|=p)', move: '物向右靠近 ➔ 像向左靠近、大小永遠不變', app: '🪞 穿衣鏡、舞蹈鏡、潛望鏡' },
+          { badge: '正立縮小虛像', badgeCls: 'bg-purple-500/20 text-purple-300 border-purple-500/40', el: 'concave_lens', pVal: 160, name: '凹透鏡', cond: '鏡前任何位置 (含2F外/F內)', imgPos: '與物同側、焦點 F₁ 內', move: '物向右靠近 ➔ 像向右靠近、像漸大 (仍小於物)', app: '👓 近視眼鏡、防盜門眼 (貓眼)' },
+          { badge: '正立縮小虛像', badgeCls: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', el: 'convex_mirror', pVal: 160, name: '凸面鏡', cond: '鏡前任何位置 (含2F外/F內)', imgPos: '鏡後虛焦點 F 內', move: '物向右靠近 ➔ 像向左靠近、像漸大 (仍小於物)', app: '🚗 汽車後視鏡、山路轉角廣角鏡' }
+        ]
+      },
+      real_group: {
+        title: '📄 【倒立實像】全鏡種分類彙整表（縮小 vs. 相等 vs. 放大）',
+        subtitle: '只有「會聚鏡（凸透鏡、凹面鏡）」且物體在「焦點外 (p > F)」才能形成倒立實像！實際光線會聚，紙屏可成像。',
+        rows: [
+          { badge: '倒立縮小實像', badgeCls: 'bg-sky-500/20 text-sky-300 border-sky-500/40', el: 'convex_lens', pVal: 255, name: '凸透鏡', cond: '物在 2F 外 (p > 2F)', imgPos: '異側 F ~ 2F 之間', move: '物向右靠近 ➔ 像向右遠離、像漸大', app: '📷 照相機、人類眼睛水晶體成像' },
+          { badge: '倒立縮小實像', badgeCls: 'bg-sky-500/20 text-sky-300 border-sky-500/40', el: 'concave_mirror', pVal: 255, name: '凹面鏡', cond: '物在 2F 外 (p > 2F)', imgPos: '鏡前 F ~ 2F 之間', move: '物向右靠近 ➔ 像向左遠離、像漸大', app: '🔭 反射式天文望遠鏡' },
+          { badge: '倒立相等實像', badgeCls: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', el: 'convex_lens', pVal: 200, name: '凸透鏡', cond: '物在 2F 上 (p = 2F)', imgPos: '異側 2F 上 (q = 2F)', move: '放大率分界點 (|M| = 1)', app: '🖨️ 等倍影印機、對稱法測凸透鏡焦距' },
+          { badge: '倒立相等實像', badgeCls: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', el: 'concave_mirror', pVal: 200, name: '凹面鏡', cond: '物在 2F 上 (p = 2F)', imgPos: '鏡前 2F 上 (q = 2F)', move: '放大率分界點 (|M| = 1)', app: '🔬 光學對稱校準實驗' },
+          { badge: '倒立放大實像', badgeCls: 'bg-rose-500/20 text-rose-300 border-rose-500/40', el: 'convex_lens', pVal: 145, name: '凸透鏡', cond: '物在 F ~ 2F 之間', imgPos: '異側 2F 外 (q > 2F)', move: '物向右靠近 ➔ 像向右遠離、像漸大', app: '📽️ 投影機、幻燈機、複式顯微鏡物鏡' },
+          { badge: '倒立放大實像', badgeCls: 'bg-rose-500/20 text-rose-300 border-rose-500/40', el: 'concave_mirror', pVal: 145, name: '凹面鏡', cond: '物在 F ~ 2F 之間', imgPos: '鏡前 2F 外 (q > 2F)', move: '物向右靠近 ➔ 像向左遠離、像漸大', app: '🔦 凹面聚光投影裝置' }
+        ]
+      },
+      mirror_cross: {
+        title: '🪞 【凹面鏡 vs. 凸面鏡】兩種面鏡深度交叉比較表',
+        subtitle: '同屬於「光的反射」，因此物體向鏡面移動時，像移動方向皆與物體相反（物向右、像向左）！',
+        isCross: true,
+        leftTitle: '🔦 凹面鏡 (會聚面鏡・凹面朝向物體)',
+        rightTitle: '🚗 凸面鏡 (發散面鏡・凸面朝向物體)',
+        pairs: [
+          {
+            feature: '平行光 / 無窮遠',
+            left: { el: 'concave_mirror', pVal: 200, isInf: true, desc: '反射後會聚於「鏡前焦點 F」（實像亮點）', app: '太陽能集熱器、古人陽燧取火' },
+            right: { el: 'convex_mirror', pVal: 200, isInf: true, desc: '反射後向外發散，延伸線交於「鏡後虛焦點 F」', app: '廣角發散反射' }
+          },
+          {
+            feature: '物在 2F 外 (p > 2F)',
+            left: { el: 'concave_mirror', pVal: 250, isInf: false, desc: '鏡前 F~2F 間，成「倒立縮小實像」（紙屏可接）', app: '反射式望遠鏡' },
+            right: { el: 'convex_mirror', pVal: 250, isInf: false, desc: '鏡後 F 內，成「正立縮小虛像」（紙屏不可接）', app: '汽車後視鏡、路口轉角鏡' }
+          },
+          {
+            feature: '物在 F ~ 2F 間',
+            left: { el: 'concave_mirror', pVal: 150, isInf: false, desc: '鏡前 2F 外，成「倒立放大實像」（紙屏可接）', app: '聚光成像實驗' },
+            right: { el: 'convex_mirror', pVal: 150, isInf: false, desc: '鏡後 F 內，依然成「正立縮小虛像」', app: '超商防盜廣角鏡' }
+          },
+          {
+            feature: '物在焦點 F 上',
+            left: { el: 'concave_mirror', pVal: 100, isInf: false, desc: '反射光平行主軸射出（不成像）', app: '汽車車前燈、手電筒、探照燈' },
+            right: { el: 'convex_mirror', pVal: 100, isInf: false, desc: '鏡後 F 內，成「正立縮小虛像」', app: '廣角視野觀察' }
+          },
+          {
+            feature: '物在焦點內 (p < F)',
+            left: { el: 'concave_mirror', pVal: 58, isInf: false, desc: '鏡後成「正立放大虛像」；物靠近時像靠近且變小', app: '化妝鏡、牙醫口腔檢查鏡' },
+            right: { el: 'convex_mirror', pVal: 58, isInf: false, desc: '鏡後 F 內成「正立縮小虛像」；物靠近時像靠近且變大', app: '近距離廣角反射' }
+          }
+        ]
+      },
+      lens_cross: {
+        title: '🔍 【凸透鏡 vs. 凹透鏡】兩種透鏡深度交叉比較表',
+        subtitle: '同屬於「光的折射」，因此物體向透鏡移動時，像移動方向恆與物體相同（物向右、像也向右）！',
+        isCross: true,
+        leftTitle: '🔍 凸透鏡 (會聚透鏡・中間厚邊緣薄)',
+        rightTitle: '👓 凹透鏡 (發散透鏡・中間薄邊緣厚)',
+        pairs: [
+          {
+            feature: '平行光 / 無窮遠',
+            left: { el: 'convex_lens', pVal: 200, isInf: true, desc: '折射後會聚於「異側焦點 F₂」（實像亮點）', app: '陽光聚焦點火、測量焦距' },
+            right: { el: 'concave_lens', pVal: 200, isInf: true, desc: '折射後發散，反向延伸交於「同側虛焦點 F₁」', app: '發散光束' }
+          },
+          {
+            feature: '物在 2F 外 (p > 2F)',
+            left: { el: 'convex_lens', pVal: 250, isInf: false, desc: '異側 F~2F 間，成「倒立縮小實像」（紙屏可接）', app: '照相機、眼球水晶體' },
+            right: { el: 'concave_lens', pVal: 250, isInf: false, desc: '同側 F₁ 內，成「正立縮小虛像」（紙屏不可接）', app: '近視眼鏡矯正（使光線先發散）' }
+          },
+          {
+            feature: '物在 F ~ 2F 間',
+            left: { el: 'convex_lens', pVal: 150, isInf: false, desc: '異側 2F 外，成「倒立放大實像」（紙屏可接）', app: '投影機、複式顯微鏡物鏡' },
+            right: { el: 'concave_lens', pVal: 150, isInf: false, desc: '同側 F₁ 內，依然成「正立縮小虛像」', app: '防盜門眼（貓眼）' }
+          },
+          {
+            feature: '物在焦點內 (p < F)',
+            left: { el: 'convex_lens', pVal: 58, isInf: false, desc: '同側成「正立放大虛像」；物靠近時像向右靠近且變小', app: '放大鏡、遠視/老花眼鏡、顯微鏡目鏡' },
+            right: { el: 'concave_lens', pVal: 58, isInf: false, desc: '同側 F₁ 內成「正立縮小虛像」；物靠近時像向右靠近且變大', app: '近視眼鏡（看近物亦縮小）' }
+          }
+        ]
+      }
+    };
+
+    function switchCategoryTable(catKey) {
+      ['virtual_group', 'real_group', 'mirror_cross', 'lens_cross'].forEach(k => {
+        const btn = document.getElementById(`cattab-${k}`);
+        if (k === catKey) {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800';
+        }
+      });
+
+      const data = CATEGORY_TABLES[catKey];
+      const container = document.getElementById('category-comparison-container');
+
+      if (!data.isCross) {
+        let html = `
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+            <h3 class="text-base font-black text-white">${data.title}</h3>
+            <p class="text-xs text-slate-400 mt-0.5">${data.subtitle}</p>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-slate-950 text-slate-300 border-b border-slate-800">
+                  <th class="py-2.5 px-3 font-bold">成像性質分類</th>
+                  <th class="py-2.5 px-3 font-bold">鏡種與條件</th>
+                  <th class="py-2.5 px-3 font-bold text-center">成像導引縮圖 (點擊模擬)</th>
+                  <th class="py-2.5 px-3 font-bold">成像位置</th>
+                  <th class="py-2.5 px-3 font-bold">物體靠近鏡面時變化</th>
+                  <th class="py-2.5 px-3 font-bold">代表應用</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-900/60">
+        `;
+
+        data.rows.forEach((r, idx) => {
+          const cid = `cat-thumb-${catKey}-${idx}`;
+          html += `
+            <tr onclick="jumpToLab('${r.el}', ${r.pVal}, false)" class="hover:bg-sky-500/10 cursor-pointer transition">
+              <td class="py-2.5 px-3">
+                <span class="px-2.5 py-1 rounded-md border text-xs font-black ${r.badgeCls}">${r.badge}</span>
+              </td>
+              <td class="py-2.5 px-3">
+                <div class="font-black text-white text-sm">${r.name}</div>
+                <div class="text-xs text-sky-300 font-bold">${r.cond}</div>
+              </td>
+              <td class="py-2 px-2 text-center">
+                <div class="w-44 h-20 mx-auto rounded-lg bg-slate-950 border border-slate-700/80 overflow-hidden">
+                  <canvas id="${cid}" width="176" height="80" class="w-full h-full block"></canvas>
+                </div>
+              </td>
+              <td class="py-2.5 px-3 text-slate-300 font-medium">${r.imgPos}</td>
+              <td class="py-2.5 px-3 text-slate-300">${r.move}</td>
+              <td class="py-2.5 px-3 text-amber-300 font-bold">${r.app}</td>
+            </tr>
+          `;
+        });
+
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
+
+        requestAnimationFrame(() => {
+          data.rows.forEach((r, idx) => {
+            const c = document.getElementById(`cat-thumb-${catKey}-${idx}`);
+            if (c) drawTableGuideThumb(c, r.el, r.pVal, 100, false);
+          });
+        });
+      } else {
+        // Side-by-side Cross-Comparison Table (凹面鏡 vs 凸面鏡 OR 凸透鏡 vs 凹透鏡)
+        let html = `
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+            <h3 class="text-base font-black text-white">${data.title}</h3>
+            <p class="text-xs text-slate-400 mt-0.5">${data.subtitle}</p>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-slate-950 text-slate-200 border-b border-slate-800">
+                  <th class="py-3 px-3 font-black w-32">比較項目 / 物距</th>
+                  <th class="py-3 px-3 font-black text-amber-300 border-l border-slate-800">${data.leftTitle}</th>
+                  <th class="py-3 px-3 font-black text-emerald-300 border-l border-slate-800">${data.rightTitle}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-900/60">
+        `;
+
+        data.pairs.forEach((pair, idx) => {
+          const cidL = `cross-L-${catKey}-${idx}`;
+          const cidR = `cross-R-${catKey}-${idx}`;
+          html += `
+            <tr>
+              <td class="py-3 px-3 font-black text-sky-300 bg-slate-950/50">${pair.feature}</td>
+              <td onclick="jumpToLab('${pair.left.el}', ${pair.left.pVal}, ${pair.left.isInf})" class="py-3 px-3 border-l border-slate-800 hover:bg-amber-500/10 cursor-pointer transition">
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                  <div class="w-44 h-20 rounded-lg bg-slate-950 border border-slate-700/80 shrink-0 overflow-hidden">
+                    <canvas id="${cidL}" width="176" height="80" class="w-full h-full block"></canvas>
+                  </div>
+                  <div class="space-y-1">
+                    <div class="font-bold text-white">${pair.left.desc}</div>
+                    <div class="text-xs text-amber-300">💡 應用：${pair.left.app}</div>
+                    <div class="text-[11px] text-sky-400 font-bold">▶ 點擊模擬此光路</div>
+                  </div>
+                </div>
+              </td>
+              <td onclick="jumpToLab('${pair.right.el}', ${pair.right.pVal}, ${pair.right.isInf})" class="py-3 px-3 border-l border-slate-800 hover:bg-emerald-500/10 cursor-pointer transition">
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                  <div class="w-44 h-20 rounded-lg bg-slate-950 border border-slate-700/80 shrink-0 overflow-hidden">
+                    <canvas id="${cidR}" width="176" height="80" class="w-full h-full block"></canvas>
+                  </div>
+                  <div class="space-y-1">
+                    <div class="font-bold text-white">${pair.right.desc}</div>
+                    <div class="text-xs text-emerald-300">💡 應用：${pair.right.app}</div>
+                    <div class="text-[11px] text-sky-400 font-bold">▶ 點擊模擬此光路</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
+
+        requestAnimationFrame(() => {
+          data.pairs.forEach((pair, idx) => {
+            const cL = document.getElementById(`cross-L-${catKey}-${idx}`);
+            const cR = document.getElementById(`cross-R-${catKey}-${idx}`);
+            if (cL) drawTableGuideThumb(cL, pair.left.el, pair.left.pVal, 100, pair.left.isInf);
+            if (cR) drawTableGuideThumb(cR, pair.right.el, pair.right.pVal, 100, pair.right.isInf);
+          });
+        });
+      }
+    }
+
+    // =========================================================================
+    // ILLUSTRATED OPTICAL APPLICATIONS GALLERY (配圖 + 光線 + 成像)
+    // =========================================================================
+    const OPTICAL_APPS_DATA = [
+      {
+        id: 'magnifier',
+        cat: 'lens',
+        title: '🔍 放大鏡 (觀察紅螞蟻/珠寶)',
+        element: 'convex_lens',
+        pVal: 58,
+        isInf: false,
+        badge: '凸透鏡・焦點內 (p < F)',
+        imgType: '正立放大虛像（與物同側）',
+        rayDesc: '紅螞蟻置於凸透鏡焦點 F 內，光線經凸透鏡折射後雖仍發散，但人眼從右側往透鏡看去，大腦將折射光反向延伸交會於同側，形成放大的正立虛像！',
+        tip: '物體在焦點內愈靠近焦點 F，虛像愈大；愈靠近透鏡，虛像愈小。',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><circle cx="52" cy="42" r="24" fill="rgba(56,189,248,0.2)" stroke="#38bdf8" stroke-width="4"/><line x1="70" y1="58" x2="96" y2="80" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/><circle cx="44" cy="44" r="5" fill="#ef4444"/><circle cx="53" cy="41" r="6.5" fill="#ef4444"/><circle cx="62" cy="39" r="4" fill="#ef4444"/><path d="M48 46 L42 54 M53 47 L53 56 M58 45 L64 53" stroke="#ef4444" stroke-width="2"/><text x="12" y="20" fill="#7dd3fc" font-size="10" font-weight="bold">正立放大虛像</text></svg>`
+      },
+      {
+        id: 'camera',
+        cat: 'lens',
+        title: '📷 照相機 & 人眼水晶體成像',
+        element: 'convex_lens',
+        pVal: 250,
+        isInf: false,
+        badge: '凸透鏡・2倍焦距外 (p > 2F)',
+        imgType: '倒立縮小實像（異側 F~2F 間感光元件上）',
+        rayDesc: '遠處景物在凸透鏡 2F 外，發出的光線經凸透鏡折射後，實際會聚於異側 F~2F 之間的「感光元件（或視網膜）」上，形成清晰的倒立縮小實像。',
+        tip: '拍近物時物距變小，實像往後退，故鏡頭需「向外伸出」拉長像距對焦！',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><rect x="38" y="22" width="64" height="48" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="2"/><ellipse cx="38" cy="46" rx="6" ry="20" fill="rgba(56,189,248,0.45)" stroke="#38bdf8" stroke-width="2"/><line x1="94" y1="28" x2="94" y2="64" stroke="#10b981" stroke-width="3"/><path d="M14 58 L14 30 M10 36 L14 30 L18 36" stroke="#38bdf8" stroke-width="2.5" fill="none"/><path d="M14 30 L38 46 L94 56 M14 30 L38 30 L94 56" stroke="#fbbf24" stroke-width="1.2" opacity="0.8"/><path d="M86 38 L86 56 M83 51 L86 56 L89 51" stroke="#10b981" stroke-width="2" fill="none"/><text x="48" y="16" fill="#6ee7b7" font-size="9" font-weight="bold">感光元件(底片)</text></svg>`
+      },
+      {
+        id: 'projector',
+        cat: 'lens',
+        title: '📽️ 投影機 / 幻燈機 & 顯微鏡物鏡',
+        element: 'convex_lens',
+        pVal: 145,
+        isInf: false,
+        badge: '凸透鏡・F ~ 2F 之間',
+        imgType: '倒立放大實像（異側 2F 外大銀幕上）',
+        rayDesc: '幻燈片或液晶面板置於凸透鏡 F 與 2F 之間，強光穿過後經凸透鏡折射會聚於遠處（2F 外）的白色大銀幕上，形成倒立放大的實像。',
+        tip: '因為成倒立實像，若想在銀幕看到正立影像，底片必須「倒著放」！',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><rect x="14" y="32" width="34" height="28" rx="4" fill="#334155" stroke="#94a3b8" stroke-width="1.5"/><ellipse cx="48" cy="46" rx="5" ry="14" fill="rgba(56,189,248,0.5)" stroke="#38bdf8" stroke-width="2"/><polygon points="48,36 104,16 104,76 48,56" fill="rgba(250,204,21,0.18)"/><line x1="104" y1="14" x2="104" y2="78" stroke="#f8fafc" stroke-width="3"/><text x="58" y="84" fill="#fde047" font-size="9" font-weight="bold">大銀幕(2F外放大實像)</text></svg>`
+      },
+      {
+        id: 'rearview_mirror',
+        cat: 'mirror',
+        title: '🚗 汽車後視鏡 & 山路轉角反射鏡',
+        element: 'convex_mirror',
+        pVal: 180,
+        isInf: false,
+        badge: '凸面鏡・鏡前任意位置',
+        imgType: '正立縮小虛像（鏡後虛焦點 F 內）',
+        rayDesc: '後方來車的光線射至凸面鏡向外發散反射，駕駛眼睛接收反射光後往鏡後延伸，在虛焦點內看到「正立縮小虛像」，能大幅擴大視野範圍、減少死角！',
+        tip: '凸面鏡能涵蓋更廣視角，但鏡中物體看起來比實際距離更遠。',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M72 16 Q56 45 72 74" stroke="#34d399" stroke-width="4" fill="none"/><path d="M16 26 L64 34 L16 14 M16 64 L64 56 L16 76" stroke="#fbbf24" stroke-width="1.5" fill="none"/><line x1="64" y1="34" x2="92" y2="42" stroke="#e879f9" stroke-width="1.5" stroke-dasharray="3,2"/><line x1="64" y1="56" x2="92" y2="48" stroke="#e879f9" stroke-width="1.5" stroke-dasharray="3,2"/><rect x="88" y="38" width="14" height="14" rx="2" fill="rgba(52,211,153,0.35)" stroke="#34d399"/><text x="10" y="48" fill="#6ee7b7" font-size="9" font-weight="bold">廣角視野</text></svg>`
+      },
+      {
+        id: 'headlight_solar',
+        cat: 'mirror',
+        title: '🔦 汽車車前燈/手電筒 & 陽燧太陽能集熱',
+        element: 'concave_mirror',
+        pVal: 100,
+        isInf: false,
+        badge: '凹面鏡・焦點與平行光互逆原理',
+        imgType: '光源在焦點 F ➔ 反射平行光 ｜ 平行陽光 ➔ 會聚於焦點 F',
+        rayDesc: '【車前燈】將燈泡置於凹面鏡焦點 F 上，光線經凹面反射後平行主軸射出遠方；反之【陽燧取火/太陽能】平行陽光射入凹面鏡，反射後會聚於焦點 F 高溫點火！',
+        tip: '這是會考最常考的「光路可逆性」代表應用！',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M78 16 Q102 45 78 74" stroke="#fbbf24" stroke-width="4" fill="none"/><circle cx="52" cy="45" r="6" fill="#fef08a"/><line x1="52" y1="45" x2="84" y2="24" stroke="#fde047" stroke-width="1.8"/><line x1="84" y1="24" x2="10" y2="24" stroke="#fde047" stroke-width="2"/><line x1="52" y1="45" x2="84" y2="66" stroke="#fde047" stroke-width="1.8"/><line x1="84" y1="66" x2="10" y2="66" stroke="#fde047" stroke-width="2"/><text x="12" y="18" fill="#fde047" font-size="9" font-weight="bold">平行強光束射出</text></svg>`
+      },
+      {
+        id: 'makeup_mirror',
+        cat: 'mirror',
+        title: '💄 梳妝放大化妝鏡 & 牙醫口鏡',
+        element: 'concave_mirror',
+        pVal: 58,
+        isInf: false,
+        badge: '凹面鏡・焦點內 (p < F)',
+        imgType: '正立放大虛像（鏡後異側）',
+        rayDesc: '臉部或牙齒位於凹面鏡焦點 F 內，反射光線向外發散，眼睛接收反射光向鏡後延伸，即可看到清晰放大的正立虛像，方便觀察細節。',
+        tip: '注意：若人退後到凹面鏡焦點外，鏡中影像會變成倒立實像喔！',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M58 14 Q76 45 58 76" stroke="#fbbf24" stroke-width="4" fill="none"/><circle cx="36" cy="48" r="10" fill="#38bdf8"/><circle cx="92" cy="45" r="18" fill="rgba(251,191,36,0.25)" stroke="#fbbf24" stroke-dasharray="3,2" stroke-width="2"/><text x="12" y="20" fill="#fde047" font-size="9" font-weight="bold">鏡後正立放大虛像</text></svg>`
+      },
+      {
+        id: 'myopia_glasses',
+        cat: 'eye',
+        title: '👓 近視眼成因與「凹透鏡」矯正',
+        element: 'concave_lens',
+        pVal: 180,
+        isInf: false,
+        badge: '凹透鏡・發散光線延後會聚',
+        imgType: '近視成像在視網膜「前」➔ 配戴凹透鏡發散光線退回視網膜上',
+        rayDesc: '近視眼因眼球過長或水晶體太凸（焦距過短），遠處物體成像在視網膜「前方」導致模糊；配戴「凹透鏡」先將光線微微發散，再經水晶體折射即可準確成像於視網膜！',
+        tip: '口訣：近視太早會聚 ➔ 用「凹透鏡（發散）」往後推！',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><path d="M24 22 L32 22 Q28 45 32 68 L24 68 Q28 45 24 22 Z" fill="rgba(192,132,252,0.4)" stroke="#c084fc" stroke-width="1.8"/><circle cx="78" cy="45" r="26" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><ellipse cx="56" cy="45" rx="5" ry="15" fill="rgba(56,189,248,0.5)" stroke="#38bdf8" stroke-width="1.5"/><path d="M6 34 L28 34 L56 30 L104 45 M6 56 L28 56 L56 60 L104 45" stroke="#fde047" stroke-width="1.5" fill="none"/><circle cx="104" cy="45" r="3.5" fill="#10b981"/><text x="58" y="84" fill="#c084fc" font-size="9" font-weight="bold">凹透鏡矯正後落於視網膜</text></svg>`
+      },
+      {
+        id: 'hyperopia_microscope',
+        cat: 'eye',
+        title: '🔬 遠視/老花眼矯正 & 複式顯微鏡雙凸透鏡',
+        element: 'convex_lens',
+        pVal: 65,
+        isInf: false,
+        badge: '凸透鏡・會聚光線 / 二次放大成像',
+        imgType: '遠視配戴凸透鏡會聚 ｜ 顯微鏡：物鏡(倒立放大實像) ➔ 目鏡(放大虛像)',
+        rayDesc: '【遠視眼】成像在視網膜後方，需配戴「凸透鏡」預先會聚光線。【複式顯微鏡】第1次由物鏡（F~2F）成倒立放大實像，第2次落入目鏡焦點內（<F）再放大成最終倒立放大虛像！',
+        tip: '顯微鏡最終看到的影像與原物相比為「上下顛倒、左右相反」的放大虛像！',
+        svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><ellipse cx="30" cy="45" rx="5" ry="18" fill="rgba(56,189,248,0.45)" stroke="#38bdf8" stroke-width="2"/><circle cx="78" cy="45" r="25" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><ellipse cx="56" cy="45" rx="5" ry="15" fill="rgba(56,189,248,0.5)" stroke="#38bdf8" stroke-width="1.5"/><path d="M8 32 L30 32 L56 36 L103 45 M8 58 L30 58 L56 54 L103 45" stroke="#34d399" stroke-width="1.5" fill="none"/><circle cx="103" cy="45" r="3.5" fill="#10b981"/><text x="54" y="84" fill="#6ee7b7" font-size="9" font-weight="bold">凸透鏡助會聚於視網膜</text></svg>`
+      }
+    ];
+
+    function renderAppsGallery(filter = 'all') {
+      ['all', 'lens', 'mirror', 'eye'].forEach(k => {
+        const btn = document.getElementById(`app-filter-${k}`);
+        if (!btn) return;
+        if (k === filter) {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700';
+        }
+      });
+
+      const grid = document.getElementById('apps-gallery-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      OPTICAL_APPS_DATA.filter(a => filter === 'all' || a.cat === filter).forEach((app, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950/90 rounded-2xl border border-slate-800 hover:border-sky-500/50 transition overflow-hidden flex flex-col justify-between shadow-lg';
+        const cid = `app-ray-canvas-${app.id}-${idx}`;
+
+        card.innerHTML = `
+          <div>
+            <!-- Top Header -->
+            <div class="px-4 py-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between gap-2">
+              <h3 class="font-black text-base text-white">${app.title}</h3>
+              <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 shrink-0">${app.badge}</span>
+            </div>
+
+            <!-- Dual Visual Box: Left SVG Illustration + Right Live Ray-Tracing Diagram -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-950">
+              <div class="sm:col-span-5 h-32 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 flex flex-col">
+                <div class="text-[10px] font-bold text-slate-400 px-2 py-1 bg-slate-950/80 border-b border-slate-800">🎨 儀器結構示意圖</div>
+                <div class="flex-1 flex items-center justify-center">${app.svg}</div>
+              </div>
+              <div class="sm:col-span-7 h-32 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 flex flex-col">
+                <div class="text-[10px] font-bold text-amber-300 px-2 py-1 bg-slate-950/80 border-b border-slate-800 flex justify-between">
+                  <span>✨ 對應光線與成像導引圖</span>
+                  <span class="text-sky-300">物 ➔ 鏡 ➔ 像</span>
+                </div>
+                <div class="flex-1 relative">
+                  <canvas id="${cid}" width="260" height="98" class="w-full h-full block"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Explanation Text -->
+            <div class="px-4 py-3 space-y-1.5 text-xs">
+              <div class="font-bold text-emerald-300">🎯 成像性質：${app.imgType}</div>
+              <p class="text-slate-300 leading-relaxed">${app.rayDesc}</p>
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-amber-300">
+                📌 <strong>會考重點：</strong>${app.tip}
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 py-2.5 bg-slate-900/80 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-[11px] text-slate-400">點擊右側按鈕在主實驗室互動拖曳 ➔</span>
+            <button onclick="jumpToLab('${app.element}', ${app.pVal}, ${app.isInf})" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow transition">
+              🔬 載入此應用至實驗室模擬
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+
+        requestAnimationFrame(() => {
+          const c = document.getElementById(cid);
+          if (c) drawTableGuideThumb(c, app.element, app.pVal, 100, app.isInf);
+        });
+      });
+    }
+
+    function filterAppsGallery(filter) {
+      renderAppsGallery(filter);
+    }
+
+    // Update the Live Application Mini Card inside the Main Lab Right Sidebar
+    function updateLabAppMiniCard(opt) {
+      const svgBox = document.getElementById('hud-app-svg');
+      const titleEl = document.getElementById('hud-app-card-title');
+      const descEl = document.getElementById('hud-app-card-desc');
+      if (!svgBox || !titleEl || !descEl) return;
+
+      let matchedApp = OPTICAL_APPS_DATA[0];
+      if (opt.element === 'convex_lens') {
+        if (opt.is - 0 || opt.p < opt.f) matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'magnifier');
+        else if (opt.p >= 1.95 * opt.f) matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'camera');
+        else matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'projector');
+      } else if (opt.element === 'concave_lens') {
+        matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'myopia_glasses');
+      } else if (opt.element === 'concave_mirror') {
+        if (opt.p < opt.f && !opt.isInfinity) matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'makeup_mirror');
+        else matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'headlight_solar');
+      } else if (opt.element === 'convex_mirror') {
+        matchedApp = OPTICAL_APPS_DATA.find(a => a.id === 'rearview_mirror');
+      } else {
+        matchedApp = {
+          title: '🪞 平面穿衣鏡 / 潛望鏡',
+          imgType: '正立相等虛像（像距＝物距、左右相反）',
+          svg: `<svg viewBox="0 0 120 90" class="w-full h-full"><rect width="120" height="90" fill="#0f172a"/><line x1="60" y1="10" x2="60" y2="80" stroke="#e2e8f0" stroke-width="3"/><circle cx="32" cy="45" r="12" fill="#38bdf8"/><circle cx="88" cy="45" r="12" fill="rgba(56,189,248,0.35)" stroke="#38bdf8" stroke-dasharray="3,2" stroke-width="2"/></svg>`
+        };
+      }
+
+      svgBox.innerHTML = matchedApp.svg;
+      titleEl.textContent = matchedApp.title;
+      descEl.textContent = matchedApp.imgType;
+    }
+
+    // =========================================================================
+    // TAB 4: CURRICULUM QUIZ & MYTH-BUSTER (會考觀念迷思挑戰)
+    // =========================================================================
+    const QUIZ_QUESTIONS = [
+      {
+        q: '1. 【109會考改編】小華將蠟燭放在某未知透鏡左側 6 cm 處，發現無論如何移動紙屏都無法在紙屏上清晰成像，改以眼睛透過透鏡觀察，看到「正立縮小的蠟燭像」。若將蠟燭移至透鏡左側 13 cm 處，此時觀察到的像性質為何？',
+        options: [
+          'A. 正立縮小的虛像',
+          'B. 正立放大的虛像',
+          'C. 倒立縮小的實像',
+          'D. 倒立放大的實像'
+        ],
+        correct: 0,
+        exp: '💡 破題關鍵：紙屏無法成像代表是「虛像」。凸透鏡的虛像必為「正立放大」，唯有「凹透鏡」才會成「正立縮小虛像」！而凹透鏡不論物體移到 6 cm 或 13 cm，永遠成「正立縮小虛像」。',
+        simAction: () => jumpToLab('concave_lens', 180, false)
+      },
+      {
+        q: '2. 【111會考補考】古人使用「陽燧」取火，一面為凹面、一面為凸面，使用時將其中一面對準太陽，持少量乾草置於靠近此面的焦點位置即可引燃乾草。請問「陽燧」引燃乾草的原理為何？',
+        options: [
+          'A. 利用凸面面對太陽，使陽光因反射而會聚',
+          'B. 利用凹面面對太陽，使陽光因反射而會聚',
+          'C. 利用凹面面對太陽，使陽光因折射而會聚',
+          'D. 利用凸面面對太陽，使陽光因折射而會聚'
+        ],
+        correct: 1,
+        exp: '💡 破題關鍵：金屬銅鏡不透光，屬於「光的反射」；平行太陽光照射「凹面鏡」反射後會聚於焦點上引燃乾草。',
+        simAction: () => jumpToLab('concave_mirror', 200, true)
+      },
+      {
+        q: '3. 【觀念迷思挑戰】當物體在「凸透鏡」或「凹透鏡」前由遠處逐漸向右靠近透鏡時，關於物體移動方向與像移動方向的比較，下列何者正確？',
+        options: [
+          'A. 在凸透鏡前物像移動方向相反，在凹透鏡前相同',
+          'B. 在實像區移動方向相反，在虛像區移動方向相同',
+          'C. 物體在任何透鏡前成像，物體移動的方向恆與像移動方向相同（皆向右）',
+          'D. 物體在任何透鏡前成像，物體移動的方向恆與像移動方向相反'
+        ],
+        correct: 2,
+        exp: '💡 破題關鍵：課本觀念迷思明確指出——「物體在任何透鏡前成像，物體移動的方向恆與像移動方向相同」！只有面鏡（反射）才是物像移動方向相反。',
+        simAction: () => { switchMainTab('compare'); setComparePreset('all4'); }
+      },
+      {
+        q: '4. 【113會考精選】由透鏡主軸上 P 點發射的光線，經過某透鏡偏折後會聚於另一側主軸上。若 P 點距離透鏡 10 cm，且會聚點也距離透鏡 10 cm（物距 p = 像距 q = 10 cm），則此透鏡的焦距 f 應為多少？',
+        options: [
+          'A. 20 cm (凸透鏡)',
+          'B. 10 cm (凸透鏡)',
+          'C. 5 cm (凸透鏡，因為 2F = 10 cm)',
+          'D. 5 cm (凹透鏡)'
+        ],
+        correct: 2,
+        exp: '💡 破題關鍵：光線能實際會聚於另一側，必為「凸透鏡」；當物距等於像距 (p = q = 10 cm) 時，代表物體位於兩倍焦距上 (2F = 10 cm)，故焦距 f = 5 cm！若題目要找 f = 10 cm，則從 P 點 (10 cm 焦點上) 發出的光經過凸透鏡後應變成「平行主軸的光線」。',
+        simAction: () => jumpToLab('convex_lens', 200, false)
+      },
+      {
+        q: '5. 【焦點內虛像比較】當你拿放大鏡（凸透鏡）貼著桌面上的直尺，在「焦點內」將放大鏡慢慢提起遠離直尺（相當於物體在焦點內逐漸遠離凸透鏡、靠近焦點 F），眼睛看到的直尺刻度虛像會如何變化？',
+        options: [
+          'A. 正立虛像愈來愈大',
+          'B. 正立虛像愈來愈小',
+          'C. 倒立實像愈來愈大',
+          'D. 大小維持不變'
+        ],
+        correct: 0,
+        exp: '💡 破題關鍵：物體在凸透鏡焦點內時，愈靠近凸透鏡像愈小（趨近原物），愈遠離凸透鏡（愈靠近焦點 F）時，正立放大虛像會「愈來愈大」！',
+        simAction: () => jumpToLab('convex_lens', 65, false)
+      }
+    ];
+
+    let quizAnswered = {};
+    let quizScore = 0;
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+      document.getElementById('quiz-score').textContent = quizScore;
+
+      QUIZ_QUESTIONS.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950/90 rounded-xl border border-slate-800 p-4 space-y-3';
+
+        const qTitle = document.createElement('div');
+        qTitle.className = 'text-sm sm:text-base font-bold text-white leading-relaxed';
+        qTitle.textContent = item.q;
+        card.appendChild(qTitle);
+
+        const optGrid = document.createElement('div');
+        optGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-2';
+
+        item.options.forEach((optText, oIdx) => {
+          const btn = document.createElement('button');
+          const userPick = quizAnswered[idx];
+          let btnStyle = 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200';
+
+          if (userPick !== undefined) {
+            if (oIdx === item.correct) {
+              btnStyle = 'bg-emerald-500/20 border-emerald-500 text-emerald-200 font-bold';
+            } else if (oIdx === userPick && userPick !== item.correct) {
+              btnStyle = 'bg-rose-500/20 border-rose-500 text-rose-300';
+            } else {
+              btnStyle = 'bg-slate-900/40 border-slate-800 text-slate-500';
+            }
+          }
+
+          btn.className = `text-left px-3.5 py-2.5 rounded-lg border text-xs sm:text-sm transition ${btnStyle}`;
+          btn.textContent = optText;
+          btn.onclick = () => {
+            if (quizAnswered[idx] !== undefined) return;
+            quizAnswered[idx] = oIdx;
+            if (oIdx === item.correct) quizScore++;
+            renderQuiz();
+          };
+          optGrid.appendChild(btn);
+        });
+        card.appendChild(optGrid);
+
+        if (quizAnswered[idx] !== undefined) {
+          const expBox = document.createElement('div');
+          expBox.className = 'p-3 rounded-lg bg-slate-900 border border-slate-700 text-xs sm:text-sm text-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+          expBox.innerHTML = `
+            <div>${item.exp}</div>
+            <button class="shrink-0 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs">
+              🔬 在實驗室看光路驗證
+            </button>
+          `;
+          expBox.querySelector('button').onclick = item.simAction;
+          card.appendChild(expBox);
+        }
+
+        container.appendChild(card);
+      });
+    }
+
+    function resetQuiz() {
+      quizAnswered = {};
+      quizScore = 0;
+      renderQuiz();
+    }
+
+    // =========================================================================
+    // TAB SWITCHER & INITIALIZATION
+    // =========================================================================
+    function switchMainTab(tab) {
+      state.activeTab = tab;
+      stopContinuousMove();
+      if (tab !== 'compare') state.cmpAutoMove = false;
+
+      ['lab', 'compare', 'apps', 'table', 'quiz'].forEach(t => {
+        const sec = document.getElementById(`section-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (!sec || !btn) return;
+        if (t === tab) {
+          sec.classList.remove('hidden');
+          btn.className = 'tab-active px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5';
+        } else {
+          sec.classList.add('hidden');
+          btn.className = 'text-slate-300 hover:text-white hover:bg-slate-800/60 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5';
+        }
+      });
+
+      setTimeout(() => {
+        if (tab === 'lab') updateLab();
+        if (tab === 'compare') updateCompareMode();
+        if (tab === 'apps') renderAppsGallery('all');
+        if (tab === 'table') {
+          switchCategoryTable('virtual_group');
+          renderSummaryTable('all');
+        }
+      }, 20);
+    }
+
+    window.addEventListener('resize', () => {
+      if (state.activeTab === 'lab') updateLab();
+      if (state.activeTab === 'compare') updateCompareMode();
+    });
+
+    window.onload = function () {
+      initCanvasInteraction();
+      switchCategoryTable('virtual_group');
+      renderSummaryTable('all');
+      renderAppsGallery('all');
+      renderQuiz();
+      updateLab();
+      startPhotonAnimationLoop();
+    };
+  </script>
+</body>
+</html>
